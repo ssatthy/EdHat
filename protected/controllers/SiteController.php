@@ -31,8 +31,10 @@ class SiteController extends Controller
 		// using the default layout 'protected/views/layouts/main.php'
             if(Yii::app()->user->id==null)
                 $this->actionLogin ();
-            else
-		$this->render('index');
+            else 
+		$this->redirect(array('grading/'));
+            
+		//$this->render('index');
 	}
 
 	/**
@@ -95,7 +97,7 @@ class SiteController extends Controller
 			$model->attributes=$_POST['LoginForm'];
 			// validate user input and redirect to the previous page if valid
 			if($model->validate() && $model->login())
-				$this->redirect(Yii::app()->user->returnUrl);
+				$this->redirect(array('grading/'));
 		}
 		// display the login form
 		$this->render('login',array('model'=>$model));
