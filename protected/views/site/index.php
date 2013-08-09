@@ -7,6 +7,16 @@ $this->pageTitle=Yii::app()->name;
 <h1>Welcome to <i><?php echo CHtml::encode(Yii::app()->name); ?></i></h1>
 
 <p>Congratulations! You have successfully created your Yii application.</p>
+<?php 
+if(Yii::app()->user->checkAccess('3')){
+    echo "hello, I'm administrator";
+}
+?>
+<?php 
+if(Yii::app()->user->checkAccess('0')){
+    echo "hello, I'm a student";
+}
+?>
 
 <p>You may change the content of this page by modifying the following two files:</p>
 <ul>
