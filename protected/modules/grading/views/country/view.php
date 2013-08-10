@@ -16,7 +16,7 @@ $this->menu=array(
 );
 ?>
 
-<h1>View Country #<?php echo $model->country_id; ?></h1>
+<h1><?php echo $model->country_name; ?></h1>
 
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
@@ -26,7 +26,9 @@ $this->menu=array(
 		'status',
 	),
 )); ?>
-
+<br>
+<br>
+<br>
 <h1>Center List</h1>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'center-grid',

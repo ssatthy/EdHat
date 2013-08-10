@@ -16,7 +16,7 @@ $this->menu=array(
 );
 ?>
 
-<h1>View Course #<?php echo $model->CourseIndex; ?></h1>
+<h1><?php echo $model->CourseName; ?></h1>
 
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
@@ -32,7 +32,10 @@ $this->menu=array(
 		'EnterdBy',
 	),
 )); ?>
-
+<br>
+<br>
+<br>
+<h1>Module List</h1>
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'module-grid',

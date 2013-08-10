@@ -16,7 +16,7 @@ $this->menu=array(
 );
 ?>
 
-<h1>View Module #<?php echo $model->SerialOrder; ?></h1>
+<h1><?php echo $model->ModuleName; ?></h1>
 
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
@@ -31,6 +31,9 @@ $this->menu=array(
 		'Assement',
 	),
 )); ?>
+<br>
+<br>
+<br>
 
 <h1>Assignment List</h1>
 <?php $this->widget('zii.widgets.grid.CGridView', array(

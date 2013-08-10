@@ -26,12 +26,7 @@ $('.search-form form').submit(function(){
 ");
 ?>
 
-<h1>Manage Countries</h1>
-
-<p>
-You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>
-or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.
-</p>
+<h1>Country List</h1>
 
 <?php echo CHtml::link('Advanced Search','#',array('class'=>'search-button')); ?>
 <div class="search-form" style="display:none">
@@ -54,3 +49,8 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 'selectionChanged'=>"function(id){window.location='" . Yii::app()->urlManager->createUrl('grading/country/view', array('id'=>'')) . "' + $.fn.yiiGridView.getSelection(id);}",
 
 )); ?>
+
+<p>
+You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>
+or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.
+</p>

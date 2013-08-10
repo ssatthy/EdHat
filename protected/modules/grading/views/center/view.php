@@ -16,7 +16,7 @@ $this->menu=array(
 );
 ?>
 
-<h1>View Center #<?php echo $model->centerid; ?></h1>
+<h1><?php echo $model->cent_name; ?></h1>
 
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
@@ -27,6 +27,9 @@ $this->menu=array(
 		'country_id',
 	),
 )); ?>
+<br>
+<br>
+<br>
 
 <h1> Course List </h1>
 <?php $this->widget('zii.widgets.grid.CGridView', array(
