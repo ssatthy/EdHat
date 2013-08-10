@@ -54,9 +54,16 @@ class CountryController extends Controller
 	 */
 	public function actionView($id)
 	{
+            $criteria=new CDbCriteria;
+                $criteria->condition='country_id=:value';
+                $criteria->params=array(':value'=>$id);
+                $centers = new CActiveDataProvider("Center",array('criteria'=>$criteria));
+                
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
+                        'centers'=>$centers,
 		));
+                
 	}
 
 	/**

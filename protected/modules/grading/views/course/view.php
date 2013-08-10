@@ -32,3 +32,25 @@ $this->menu=array(
 		'EnterdBy',
 	),
 )); ?>
+
+
+<?php $this->widget('zii.widgets.grid.CGridView', array(
+	'id'=>'module-grid',
+	'dataProvider'=>$modules,
+	'columns'=>array(
+		//'SerialOrder',
+		'ModuleIndex',
+		'ModuleName',
+		//'CourseNo',
+		'Semister',
+		'Catagery',
+		/*
+		'Cradit',
+		'Assement',
+		*/
+		
+	),
+        'htmlOptions'=>array('style'=>'cursor: pointer;'),
+'selectionChanged'=>"function(id){window.location='" . Yii::app()->urlManager->createUrl('grading/module/view', array('id'=>'')) . "' + $.fn.yiiGridView.getSelection(id);}",
+
+)); ?>

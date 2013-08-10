@@ -54,8 +54,14 @@ class CourseController extends Controller
 	 */
 	public function actionView($id)
 	{
+            $criteria=new CDbCriteria;
+                $criteria->condition='CourseNo=:value';
+                $criteria->params=array(':value'=>$id);
+                $modules = new CActiveDataProvider("Module",array('criteria'=>$criteria));
+                
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
+                        'modules'=>$modules,
 		));
 	}
 

@@ -98,6 +98,12 @@ class Module extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
+                $criteria=new CDbCriteria;
+                $criteria->select = 't.*';
+                $criteria->join='LEFT JOIN professor ON professor.module_id=t.SerialOrder';
+                $criteria->condition='professor.professor=:value';
+                $criteria->params=array(':value'=>Yii::app()->user->id);
+                
 		$criteria->compare('SerialOrder',$this->SerialOrder);
 		$criteria->compare('ModuleIndex',$this->ModuleIndex,true);
 		$criteria->compare('ModuleName',$this->ModuleName,true);

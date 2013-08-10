@@ -54,8 +54,17 @@ class CenterController extends Controller
 	 */
 	public function actionView($id)
 	{
+            
+            $criteria=new CDbCriteria;
+                $criteria->select = 't.*';
+                $criteria->join='LEFT JOIN center_course ON center_course.CourseIndex=t.CourseIndex';
+                $criteria->condition='center_course.centerid=:value';
+                $criteria->params=array(':value'=>$id);
+                $courses = new CActiveDataProvider("Course",array('criteria'=>$criteria));
+                
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
+                        'courses'=>$courses,
 		));
 	}
 

@@ -48,9 +48,9 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 		'country_id',
 		'country_name',
 		'status',
-		array(
-			'class'=>'CButtonColumn',
-                    'template'=>'{view}',
-		),
+		
 	),
+    'htmlOptions'=>array('style'=>'cursor: pointer;'),
+'selectionChanged'=>"function(id){window.location='" . Yii::app()->urlManager->createUrl('grading/country/view', array('id'=>'')) . "' + $.fn.yiiGridView.getSelection(id);}",
+
 )); ?>

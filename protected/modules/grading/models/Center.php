@@ -71,10 +71,10 @@ class Center extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'centerid' => 'Centerid',
-			'cent_name' => 'Cent Name',
+			'centerid' => 'Center ID',
+			'cent_name' => 'Center Name',
 			'status' => 'Status',
-			'country_id' => 'Country',
+			'country_id' => 'Country ID',
 		);
 	}
 
@@ -87,9 +87,14 @@ class Center extends CActiveRecord
 		// Warning: Please modify the following code to remove attributes that
 		// should not be searched.
 
-		$criteria=new CDbCriteria;
 
-		$criteria->compare('centerid',$this->centerid);
+                $criteria=new CDbCriteria;
+                $criteria->select = 't.*';
+                $criteria->join='LEFT JOIN int_supervisor ON int_supervisor.center_id=t.centerid';
+                $criteria->condition='int_supervisor.intsupervisor=:value';
+                $criteria->params=array(':value'=>Yii::app()->user->id);
+                
+		$criteria->compare('t.centerid',$this->centerid);
 		$criteria->compare('cent_name',$this->cent_name,true);
 		$criteria->compare('status',$this->status,true);
 		$criteria->compare('country_id',$this->country_id);

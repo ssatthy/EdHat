@@ -26,3 +26,19 @@ $this->menu=array(
 		'status',
 	),
 )); ?>
+
+<h1>Center List</h1>
+<?php $this->widget('zii.widgets.grid.CGridView', array(
+	'id'=>'center-grid',
+	'dataProvider'=>$centers,
+	'columns'=>array(
+		'centerid',
+		'cent_name',
+		'status',
+		'country_id',
+		
+	),
+    'htmlOptions'=>array('style'=>'cursor: pointer;'),
+'selectionChanged'=>"function(id){window.location='" . Yii::app()->urlManager->createUrl('grading/center/view', array('id'=>'')) . "' + $.fn.yiiGridView.getSelection(id);}",
+)); ?>
+

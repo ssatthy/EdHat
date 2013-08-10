@@ -1,6 +1,6 @@
 <?php
 
-class ModuleController extends Controller
+class AssignmentController extends Controller
 {
 	/**
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
@@ -28,11 +28,11 @@ class ModuleController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view','gridview'),
-				'roles'=>array('1','2','3'),
+				'actions'=>array('index','view'),
+				'roles'=>array('0','1','2','3'),
 			),
                     array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('studentmodule','viewstudent'),
+				'actions'=>array('create','update','delete','admin'),
 				'roles'=>array('0'),
 			),
                     /*
@@ -58,46 +58,27 @@ class ModuleController extends Controller
 	 */
 	public function actionView($id)
 	{
-             $criteria=new CDbCriteria;
-                $criteria->condition='serial_order=:value';
-                $criteria->params=array(':value'=>$id);
-                $assingment = new CActiveDataProvider("Assignment",array('criteria'=>$criteria));
-                
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
-                    'assignment'=>$assingment,
 		));
 	}
 
-        public function actionViewstudent($id)
-	{
-            
-            $criteria=new CDbCriteria;
-                $criteria->condition='serial_order=:value';
-                $criteria->params=array(':value'=>$id);
-                $assingment = new CActiveDataProvider("Assignment",array('criteria'=>$criteria));
-                
-		$this->render('moduleviewstudent',array(
-			'model'=>$this->loadModel($id),
-                        'assignment'=>$assingment,
-		));
-	}
 	/**
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
 	public function actionCreate()
 	{
-		$model=new Module;
+		$model=new Assignment;
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['Module']))
+		if(isset($_POST['Assignment']))
 		{
-			$model->attributes=$_POST['Module'];
+			$model->attributes=$_POST['Assignment'];
 			if($model->save())
-				$this->redirect(array('view','id'=>$model->SerialOrder));
+				$this->redirect(array('view','id'=>$model->id));
 		}
 
 		$this->render('create',array(
@@ -117,11 +98,11 @@ class ModuleController extends Controller
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['Module']))
+		if(isset($_POST['Assignment']))
 		{
-			$model->attributes=$_POST['Module'];
+			$model->attributes=$_POST['Assignment'];
 			if($model->save())
-				$this->redirect(array('view','id'=>$model->SerialOrder));
+				$this->redirect(array('view','id'=>$model->id));
 		}
 
 		$this->render('update',array(
@@ -148,7 +129,7 @@ class ModuleController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Module');
+		$dataProvider=new CActiveDataProvider('Assignment');
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
@@ -157,27 +138,14 @@ class ModuleController extends Controller
 	/**
 	 * Manages all models.
 	 */
-	public function actionGridview()
+	public function actionAdmin()
 	{
-		$model=new Module('search');
+		$model=new Assignment('search');
 		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['Module']))
-			$model->attributes=$_GET['Module'];
+		if(isset($_GET['Assignment']))
+			$model->attributes=$_GET['Assignment'];
 
 		$this->render('admin',array(
-			'model'=>$model,
-		));
-	}
-
-        public function actionStudentmodule()
-	{
-             $student = Student::model()->findByPk(Yii::app()->user->id);
-            $criteria=new CDbCriteria;
-                $criteria->condition='CourseNo=:value';
-                $criteria->params=array(':value'=>$student->CourseNo);
-                $model = new CActiveDataProvider("Module",array('criteria'=>$criteria));
-	
-                $this->render('modulestudent',array(
 			'model'=>$model,
 		));
 	}
@@ -186,24 +154,30 @@ class ModuleController extends Controller
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.
 	 * @param integer $id the ID of the model to be loaded
-	 * @return Module the loaded model
+	 * @return Assignment the loaded model
 	 * @throws CHttpException
 	 */
 	public function loadModel($id)
 	{
-		$model=Module::model()->findByPk($id);
+		$model=Assignment::model()->findByPk($id);
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
 	}
-
+            //get list of modules that user has entrolled
+        public function getModuleList(){
+            $student = Student::model()->findByPk(Yii::app()->user->id);
+		$proflist = CHtml::listData(Module::model()->findAllByAttributes(array('CourseNo' => $student->CourseNo)),'SerialOrder','ModuleName');
+		return $proflist;
+	}
+        
 	/**
 	 * Performs the AJAX validation.
-	 * @param Module $model the model to be validated
+	 * @param Assignment $model the model to be validated
 	 */
 	protected function performAjaxValidation($model)
 	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='module-form')
+		if(isset($_POST['ajax']) && $_POST['ajax']==='assignment-form')
 		{
 			echo CActiveForm::validate($model);
 			Yii::app()->end();

@@ -9,8 +9,8 @@ class DefaultController extends Controller
 		if (Yii::app()->user->checkAccess('2'))
 		$this->redirect(array('center/admin'));
 		if (Yii::app()->user->checkAccess('1'))
-		$this->redirect(array('module/admin'));
+		$this->redirect(array('module/Gridview'));
 		if (Yii::app()->user->checkAccess('0'))
-		$this->redirect(array('course/admin'));
+		$this->redirect(array('module/Studentmodule'));
 	}
 }

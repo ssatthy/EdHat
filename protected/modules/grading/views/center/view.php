@@ -27,3 +27,25 @@ $this->menu=array(
 		'country_id',
 	),
 )); ?>
+
+<h1> Course List </h1>
+<?php $this->widget('zii.widgets.grid.CGridView', array(
+	'id'=>'course-grid',
+	'dataProvider'=>$courses,
+	'columns'=>array(
+		'CourseIndex',
+		'CourseName',
+		'FacultyName',
+		'Catagory',
+		'Level',
+		'SemiCount',
+		/*
+		'CertificateFee',
+		'CourseType',
+		'EnterdBy',
+		*/
+		
+	),
+    'htmlOptions'=>array('style'=>'cursor: pointer;'),
+'selectionChanged'=>"function(id){window.location='" . Yii::app()->urlManager->createUrl('grading/course/view', array('id'=>'')) . "' + $.fn.yiiGridView.getSelection(id);}",
+)); ?>

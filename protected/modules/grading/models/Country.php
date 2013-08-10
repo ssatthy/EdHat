@@ -84,10 +84,15 @@ class Country extends CActiveRecord
 		// should not be searched.
 
 		$criteria=new CDbCriteria;
-
-		$criteria->compare('country_id',$this->country_id);
+                $criteria->select = 't.*';
+                $criteria->join='LEFT JOIN ext_supervisor ON ext_supervisor.country_id=t.country_id';
+                $criteria->condition='ext_supervisor.extsupervisor=:value';
+                $criteria->params=array(':value'=>Yii::app()->user->id);
+                
+		$criteria->compare('t.country_id',$this->country_id);
 		$criteria->compare('country_name',$this->country_name,true);
 		$criteria->compare('status',$this->status,true);
+                
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

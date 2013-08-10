@@ -55,9 +55,9 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 		'Cradit',
 		'Assement',
 		*/
-		array(
-			'class'=>'CButtonColumn',
-                     'template'=>'{view}',
-		),
+		
 	),
+        'htmlOptions'=>array('style'=>'cursor: pointer;'),
+'selectionChanged'=>"function(id){window.location='" . Yii::app()->urlManager->createUrl('grading/module/view', array('id'=>'')) . "' + $.fn.yiiGridView.getSelection(id);}",
+
 )); ?>
