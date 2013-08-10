@@ -7,7 +7,7 @@
 // CWebApplication properties can be configured here.
 return array(
 	'basePath'=>dirname(__FILE__).DIRECTORY_SEPARATOR.'..',
-	'name'=>'EdHat Assignment Grading System',
+	'name'=>'EdHat Grading System',
 
 	// preloading 'log' component
 	'preload'=>array('log'),
@@ -43,6 +43,9 @@ return array(
 			// enable cookie-based authentication
 			'allowAutoLogin'=>true,
 		),
+            'file'=>array(
+                    'class'=>'application.extensions.file.CFile',
+                ),
 		// uncomment the following to enable URLs in path-format
 		/*
 		'urlManager'=>array(

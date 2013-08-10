@@ -26,7 +26,7 @@
 */
     ?>
 	<b><?php echo CHtml::encode($data->getAttributeLabel('source_file_path')); ?>:</b>
-	<?php echo CHtml::encode($data->source_file_path); ?>
+         <?php echo CHtml::link(CHtml::encode('Download'), array('assignment/DownloadFile','id'=>$data->id)); ?>
 	<br />
 
 	<b><?php echo CHtml::encode($data->getAttributeLabel('description')); ?>:</b>

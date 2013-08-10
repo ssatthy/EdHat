@@ -45,7 +45,7 @@ $('.search-form form').submit(function(){
 		'assign_no',
 		'assign_name',
 		'serial_order',
-		'source_file_path',
+		//'source_file_path',
 		'description',
 		
 	),

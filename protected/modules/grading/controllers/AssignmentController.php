@@ -32,8 +32,8 @@ class AssignmentController extends Controller
 				'roles'=>array('0','1','2','3'),
 			),
                     array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('create','update','delete','admin'),
-				'roles'=>array('0'),
+				'actions'=>array('create','DownloadFile','update','delete','admin'),
+				'roles'=>array('0','1','2','3'),
 			),
                     /*
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -77,15 +77,34 @@ class AssignmentController extends Controller
 		if(isset($_POST['Assignment']))
 		{
 			$model->attributes=$_POST['Assignment'];
-			if($model->save())
+                        $model->source=CUploadedFile::getInstance($model,'source');
+                        $model->student_id=Yii::app()->user->id;
+                        $model->source_file_path='/protected/documents/'.Yii::app()->user->id.'/'.$model->serial_order.'_'.$model->assign_no.'_'.$model->source->name;
+			if($model->save()){
+                            if (!file_exists(Yii::app()->baseUrl. '/protected/documents/'.Yii::app()->user->id)) {
+                                mkdir(Yii::getPathOfAlias('webroot'). '/protected/documents/'.Yii::app()->user->id,0644);
+                                }
+                            $model->source->saveAs(Yii::getPathOfAlias('webroot') . '/protected/documents/'.Yii::app()->user->id.'/'.$model->serial_order.'_'.$model->assign_no.'_'.$model->source->name);
 				$this->redirect(array('view','id'=>$model->id));
-		}
+                }
+                
+                        }
 
 		$this->render('create',array(
 			'model'=>$model,
 		));
 	}
 
+        public function actionDownloadFile($id)
+            {
+              $model=$this->loadModel($id);
+              $soursefile = Yii::app()->file->set(Yii::getPathOfAlias('webroot') . $model->source_file_path, true); 
+              if($soursefile->exists)
+                  $soursefile->download($model->assign_no.'_'.$model->assign_name, true);
+              else {
+                  echo 'File not found';    
+              }
+            }
 	/**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.

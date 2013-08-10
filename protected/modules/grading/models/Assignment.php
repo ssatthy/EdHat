@@ -22,6 +22,8 @@ class Assignment extends CActiveRecord
 	 * @param string $className active record class name.
 	 * @return Assignment the static model class
 	 */
+         public $source;
+    
 	public static function model($className=__CLASS__)
 	{
 		return parent::model($className);
@@ -43,14 +45,15 @@ class Assignment extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('assign_no, assign_name, serial_order, source_file_path', 'required'),
+			array('assign_no, assign_name, serial_order,student_id, source_file_path', 'required'),
 			array('assign_no, serial_order', 'numerical', 'integerOnly'=>true),
 			array('assign_name', 'length', 'max'=>45),
-			array('source_file_path', 'length', 'max'=>255),
+			array('student_id,source_file_path', 'length', 'max'=>255),
+                        array('source', 'file', 'types'=>'jpg, gif, png,doc,zip,docx,pdf'),
 			array('description', 'safe'),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, assign_no, assign_name, serial_order, source_file_path, description', 'safe', 'on'=>'search'),
+			array('id, assign_no, assign_name, serial_order,student_id, source_file_path, description', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -63,6 +66,7 @@ class Assignment extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'serialOrder' => array(self::BELONGS_TO, 'TblModule', 'serial_order'),
+                    'student' => array(self::BELONGS_TO, 'TblStudent', 'student_id'),
 			'grades' => array(self::HAS_MANY, 'Grade', 'assign_id'),
 		);
 	}
@@ -77,6 +81,8 @@ class Assignment extends CActiveRecord
 			'assign_no' => 'Assign No',
 			'assign_name' => 'Assign Name',
 			'serial_order' => 'Module ID',
+                    'student_id' => 'Student',
+                        'source' => 'File',
 			'source_file_path' => 'Source File Path',
 			'description' => 'Description',
 		);
@@ -97,6 +103,7 @@ class Assignment extends CActiveRecord
 		$criteria->compare('assign_no',$this->assign_no);
 		$criteria->compare('assign_name',$this->assign_name,true);
 		$criteria->compare('serial_order',$this->serial_order);
+                $criteria->compare('student_id',$this->student_id,true);
 		$criteria->compare('source_file_path',$this->source_file_path,true);
 		$criteria->compare('description',$this->description,true);
 

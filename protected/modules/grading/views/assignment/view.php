@@ -24,7 +24,7 @@ $this->menu=array(
 		//'id',
 		'assign_no',
 		'assign_name',
-		'serial_order',
+		//'serial_order',
 		'source_file_path',
 		'description',
 	),
