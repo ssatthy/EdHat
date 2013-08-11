@@ -8,8 +8,8 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-	array('label'=>'List View', 'url'=>array('index')),
-	array('label'=>'Grid View', 'url'=>array('admin')),
+	array('label'=>'All Centers', 'url'=>array('index')),
+	
 );
 ?>
 

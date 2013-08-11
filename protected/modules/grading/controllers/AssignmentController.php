@@ -28,7 +28,7 @@ class AssignmentController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('view'),
+				'actions'=>array('view','index'),
 				'roles'=>array('0','1','2','3'),
 			),
                     array('allow',  // allow all users to perform 'index' and 'view' actions
@@ -107,7 +107,7 @@ class AssignmentController extends Controller
                       Yii::app()->user->checkAccess('1') ||Yii::app()->user->checkAccess('2')
                       ||Yii::app()->user->checkAccess('3')))
                   
-                  echo ($soursefile->download($model->assign_no.'_'.$model->assign_name, true));
+                 $soursefile->send($model->assign_no.'_'.$model->assign_name, false);
               else {
                   throw new CHttpException(404,'The requested file does not exist.');
               }
@@ -211,6 +211,7 @@ class AssignmentController extends Controller
             
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
+                else
 		return $model;
 	}
             //get list of modules that user has entrolled

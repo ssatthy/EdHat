@@ -1,6 +1,6 @@
 <?php
 
-class CourseController extends Controller
+class GradeController extends Controller
 {
 	/**
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
@@ -29,20 +29,13 @@ class CourseController extends Controller
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
 				'actions'=>array('index','view'),
-				'roles'=>array('2','3'),
+				'roles'=>array('0','1','2','3'),
 			),
-                    /*
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update'),
-				'users'=>array('@'),
+				'actions'=>array('create','update','admin','delete'),
+				'roles'=>array('1','2','3'),
 			),
-                     
-                     */
-			array('allow', // allow admin user to perform 'admin' and 'delete' actions
-				'actions'=>array('admin'),
-				'roles'=>array('2'),
-			),
-                    
+			
 			array('deny',  // deny all users
 				'users'=>array('*'),
 			),
@@ -56,15 +49,13 @@ class CourseController extends Controller
 	public function actionView($id)
 	{
             $criteria=new CDbCriteria;
-                $criteria->condition='CourseNo=:value';
+                $criteria->condition='grade_id=:value';
                 $criteria->params=array(':value'=>$id);
-                $modules = new CActiveDataProvider("Module",array('criteria'=>$criteria));
-                
-                unset(Yii::app()->session['course_id']);
-                Yii::app()->session['course_id'] = $id;
+                $gradings = new CActiveDataProvider("Gradecolumn",array('criteria'=>$criteria));
+            
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
-                        'modules'=>$modules,
+                        'gradings'=>$gradings,
 		));
 	}
 
@@ -74,20 +65,41 @@ class CourseController extends Controller
 	 */
 	public function actionCreate()
 	{
-		$model=new Course;
-
+		$model=new Grade;
+                $columns=new Gradecolumn;
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['Course']))
+		if(isset($_POST['Grade']))
 		{
-			$model->attributes=$_POST['Course'];
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->CourseIndex));
+			$model->attributes=$_POST['Grade'];
+			if($model->save()){
+                            if(isset($_POST['field'])) {
+                                $columns->grade_id=$model->id;
+                                $columns->field=$_POST['field'];
+                                $columns->marks=$_POST['marks'];
+                                $columns->description=$_POST['description'];
+                     
+                               for($i=0;$i < sizeof($columns->field); $i++){
+                                   $singlecolumn=new Gradecolumn;
+                                   
+                                   $singlecolumn->grade_id=$model->id;
+                                   $singlecolumn->field=$columns->field[$i];
+                                   $singlecolumn->marks=$columns->marks[$i];
+                                   $singlecolumn->description=$columns->description[$i];
+                                  
+                                  $singlecolumn->save();
+                                  
+                               } 
+                                    $this->redirect(array('view','id'=>$model->id));
+                                }
+                        }
+				
 		}
 
 		$this->render('create',array(
 			'model'=>$model,
+                    'columns'=>$columns,
 		));
 	}
 
@@ -103,11 +115,11 @@ class CourseController extends Controller
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['Course']))
+		if(isset($_POST['Grade']))
 		{
-			$model->attributes=$_POST['Course'];
+			$model->attributes=$_POST['Grade'];
 			if($model->save())
-				$this->redirect(array('view','id'=>$model->CourseIndex));
+				$this->redirect(array('view','id'=>$model->id));
 		}
 
 		$this->render('update',array(
@@ -134,16 +146,7 @@ class CourseController extends Controller
 	 */
 	public function actionIndex()
 	{
-             if(Yii::app()->session['center_id']==null)
-                    throw new CHttpException(404,'No center specified. Please Select a center');
-             
-                 $criteria=new CDbCriteria;
-                 $criteria->join='LEFT JOIN center_course ON center_course.CourseIndex=t.CourseIndex';
-                $criteria->condition='center_course.centerid=:value';
-                $criteria->params=array(':value'=>Yii::app()->session['center_id']); 
-                
-           
-            $dataProvider=new CActiveDataProvider('Course',array('criteria'=>$criteria));
+		$dataProvider=new CActiveDataProvider('Grade');
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
@@ -154,10 +157,10 @@ class CourseController extends Controller
 	 */
 	public function actionAdmin()
 	{
-		$model=new Course('search');
+		$model=new Grade('search');
 		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['Course']))
-			$model->attributes=$_GET['Course'];
+		if(isset($_GET['Grade']))
+			$model->attributes=$_GET['Grade'];
 
 		$this->render('admin',array(
 			'model'=>$model,
@@ -168,29 +171,24 @@ class CourseController extends Controller
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.
 	 * @param integer $id the ID of the model to be loaded
-	 * @return Course the loaded model
+	 * @return Grade the loaded model
 	 * @throws CHttpException
 	 */
 	public function loadModel($id)
 	{
-            if(Yii::app()->session['center_id']==null)
-                      throw new CHttpException(404,'The requested page does not exist.');
-                  
-                  $model=Course::model()->findByPk($id);
-		 $centercourse= CenterCourse::model()->findByPk(array('centerid'=>Yii::app()->session['center_id'], 'CourseIndex'=>$id));
-		if($model===null||$centercourse==null)
-                    throw new CHttpException(404,'The requested page does not exist.');
-                else
+		$model=Grade::model()->findByPk($id);
+		if($model===null)
+			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
 	}
 
 	/**
 	 * Performs the AJAX validation.
-	 * @param Course $model the model to be validated
+	 * @param Grade $model the model to be validated
 	 */
 	protected function performAjaxValidation($model)
 	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='course-form')
+		if(isset($_POST['ajax']) && $_POST['ajax']==='grade-form')
 		{
 			echo CActiveForm::validate($model);
 			Yii::app()->end();

@@ -1,17 +1,18 @@
 <?php
-/* @var $this CourseController */
+/* @var $this GradeController */
 /* @var $dataProvider CActiveDataProvider */
 
 $this->breadcrumbs=array(
-	'Courses',
+	'Grades',
 );
 
 $this->menu=array(
-	
+	array('label'=>'Create Grade', 'url'=>array('create')),
+	array('label'=>'Manage Grade', 'url'=>array('admin')),
 );
 ?>
 
-<h1>Courses</h1>
+<h1>Grades</h1>
 
 <?php $this->widget('zii.widgets.CListView', array(
 	'dataProvider'=>$dataProvider,

@@ -8,11 +8,7 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-	array('label'=>'List Module', 'url'=>array('index')),
-	array('label'=>'Create Module', 'url'=>array('create')),
-	array('label'=>'Update Module', 'url'=>array('update', 'id'=>$model->SerialOrder)),
-	array('label'=>'Delete Module', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->SerialOrder),'confirm'=>'Are you sure you want to delete this item?')),
-	array('label'=>'Manage Module', 'url'=>array('admin')),
+	array('label'=>'Module list view', 'url'=>array('index')),
 );
 ?>
 

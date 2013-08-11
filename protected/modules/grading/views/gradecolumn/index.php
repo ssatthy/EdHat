@@ -1,17 +1,18 @@
 <?php
-/* @var $this CourseController */
+/* @var $this GradecolumnController */
 /* @var $dataProvider CActiveDataProvider */
 
 $this->breadcrumbs=array(
-	'Courses',
+	'Gradecolumns',
 );
 
 $this->menu=array(
-	
+	array('label'=>'Create Gradecolumn', 'url'=>array('create')),
+	array('label'=>'Manage Gradecolumn', 'url'=>array('admin')),
 );
 ?>
 
-<h1>Courses</h1>
+<h1>Gradecolumns</h1>
 
 <?php $this->widget('zii.widgets.CListView', array(
 	'dataProvider'=>$dataProvider,
