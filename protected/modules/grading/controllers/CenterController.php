@@ -62,6 +62,8 @@ class CenterController extends Controller
                 $criteria->params=array(':value'=>$id);
                 $courses = new CActiveDataProvider("Course",array('criteria'=>$criteria));
                 
+                unset(Yii::app()->session['center_id']);
+                Yii::app()->session['center_id'] = $id;
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
                         'courses'=>$courses,
@@ -134,7 +136,21 @@ class CenterController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Center');
+            $criteria=new CDbCriteria;
+            if(Yii::app()->user->checkAccess(3)){
+                if(Yii::app()->session['country_id']==null)
+                    throw new CHttpException(404,'No country specified. Please select a country');
+                $criteria->condition='country_id=:value';
+                $criteria->params=array(':value'=>Yii::app()->session['country_id']);
+                
+            }
+            if(Yii::app()->user->checkAccess(2)){
+                $criteria->join='LEFT JOIN int_supervisor ON int_supervisor.center_id=t.centerid';
+                $criteria->condition='int_supervisor.intsupervisor=:value';
+                $criteria->params=array(':value'=>Yii::app()->user->id);  
+            }
+            
+		$dataProvider=new CActiveDataProvider('Center',  array('criteria'=>$criteria));
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
@@ -164,9 +180,25 @@ class CenterController extends Controller
 	 */
 	public function loadModel($id)
 	{
-		$model=Center::model()->findByPk($id);
+            $criteria=new CDbCriteria;
+           
+            if(Yii::app()->user->checkAccess(3)){
+                if(Yii::app()->session['country_id']==null)
+                    throw new CHttpException(404,'No country specified. Please select a country');
+                $model=Center::model()->findByAttributes(array('centerid'=>$id,'country_id'=>Yii::app()->session['country_id']));
+                
+            }
+            if(Yii::app()->user->checkAccess(2)){
+                $intsup=  IntSupervisor::model()->findByPk(array('intsupervisor'=>Yii::app()->user->id,'center_id'=>$id)); 
+                if($intsup!==null)
+                    $model=Center::model()->findByPk($id);
+                else
+                    throw new CHttpException(404,'The requested page does not exist.');}
+            
+		
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
+                else
 		return $model;
 	}
 

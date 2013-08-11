@@ -8,11 +8,8 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-	array('label'=>'List Country', 'url'=>array('index')),
-	array('label'=>'Create Country', 'url'=>array('create')),
-	array('label'=>'Update Country', 'url'=>array('update', 'id'=>$model->country_id)),
-	array('label'=>'Delete Country', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->country_id),'confirm'=>'Are you sure you want to delete this item?')),
-	array('label'=>'Manage Country', 'url'=>array('admin')),
+	array('label'=>'List View', 'url'=>array('index')),
+	array('label'=>'Grid View', 'url'=>array('admin')),
 );
 ?>
 

@@ -54,11 +54,14 @@ class CountryController extends Controller
 	 */
 	public function actionView($id)
 	{
-            $criteria=new CDbCriteria;
+                $criteria=new CDbCriteria;
                 $criteria->condition='country_id=:value';
                 $criteria->params=array(':value'=>$id);
                 $centers = new CActiveDataProvider("Center",array('criteria'=>$criteria));
                 
+                //create a session variable for county for later use
+               unset(Yii::app()->session['country_id']);
+                Yii::app()->session['country_id'] = $id;
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
                         'centers'=>$centers,
@@ -132,7 +135,13 @@ class CountryController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Country');
+            $criteria=new CDbCriteria;
+                $criteria->select = 't.*';
+                $criteria->join='LEFT JOIN ext_supervisor ON ext_supervisor.country_id=t.country_id';
+                $criteria->condition='ext_supervisor.extsupervisor=:value';
+                $criteria->params=array(':value'=>Yii::app()->user->id);
+                
+		$dataProvider=new CActiveDataProvider('Country',  array('criteria'=>$criteria));
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
@@ -163,8 +172,10 @@ class CountryController extends Controller
 	public function loadModel($id)
 	{
 		$model=Country::model()->findByPk($id);
-		if($model===null)
+                $extcontry=  ExtSupervisor::model()->findByPk(array('extsupervisor'=>Yii::app()->user->id, 'country_id'=>$id));
+		if($model===null ||$extcontry===null)
 			throw new CHttpException(404,'The requested page does not exist.');
+                else
 		return $model;
 	}
 

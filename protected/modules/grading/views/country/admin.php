@@ -8,8 +8,7 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-	array('label'=>'List Country', 'url'=>array('index')),
-	array('label'=>'Create Country', 'url'=>array('create')),
+	array('label'=>'List View', 'url'=>array('index')),
 );
 
 Yii::app()->clientScript->registerScript('search', "

@@ -8,11 +8,8 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-	array('label'=>'List Center', 'url'=>array('index')),
-	array('label'=>'Create Center', 'url'=>array('create')),
-	array('label'=>'Update Center', 'url'=>array('update', 'id'=>$model->centerid)),
-	array('label'=>'Delete Center', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->centerid),'confirm'=>'Are you sure you want to delete this item?')),
-	array('label'=>'Manage Center', 'url'=>array('admin')),
+	array('label'=>'List View', 'url'=>array('index')),
+	array('label'=>'Grid View', 'url'=>array('admin')),
 );
 ?>
 

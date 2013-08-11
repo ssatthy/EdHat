@@ -28,11 +28,11 @@ class ModuleController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view','gridview'),
+				'actions'=>array('index','view','admin'),
 				'roles'=>array('1','2','3'),
 			),
                     array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('studentmodule','viewstudent'),
+				'actions'=>array('student','viewstudent'),
 				'roles'=>array('0'),
 			),
                     /*
@@ -62,6 +62,9 @@ class ModuleController extends Controller
                 $criteria->condition='serial_order=:value';
                 $criteria->params=array(':value'=>$id);
                 $assingment = new CActiveDataProvider("Assignment",array('criteria'=>$criteria));
+                
+                unset(Yii::app()->session['module_id']);
+                Yii::app()->session['module_id'] = $id;
                 
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
@@ -148,7 +151,21 @@ class ModuleController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Module');
+            $criteria=new CDbCriteria;
+            if(Yii::app()->user->checkAccess(3)||Yii::app()->user->checkAccess(2)){
+             if(Yii::app()->session['course_id']==null)
+                    throw new CHttpException(404,'No course specified. Please Select a course');
+             
+             $criteria->condition='CourseNo=:value';
+                $criteria->params=array(':value'=>Yii::app()->session['course_id']); 
+            }    
+            if(Yii::app()->user->checkAccess(1)){
+                $criteria=new CDbCriteria;
+                $criteria->join='LEFT JOIN professor ON professor.module_id=t.SerialOrder';
+                $criteria->condition='professor.professor=:value';
+                $criteria->params=array(':value'=>Yii::app()->user->id); 
+                }
+		$dataProvider=new CActiveDataProvider('Module',array('criteria'=>$criteria));
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
@@ -157,7 +174,7 @@ class ModuleController extends Controller
 	/**
 	 * Manages all models.
 	 */
-	public function actionGridview()
+	public function actionAdmin()
 	{
 		$model=new Module('search');
 		$model->unsetAttributes();  // clear any default values
@@ -169,7 +186,7 @@ class ModuleController extends Controller
 		));
 	}
 
-        public function actionStudentmodule()
+        public function actionStudent()
 	{
              $student = Student::model()->findByPk(Yii::app()->user->id);
             $criteria=new CDbCriteria;
@@ -191,9 +208,28 @@ class ModuleController extends Controller
 	 */
 	public function loadModel($id)
 	{
-		$model=Module::model()->findByPk($id);
+            
+            if(Yii::app()->user->checkAccess(3)||Yii::app()->user->checkAccess(2)){
+             if(Yii::app()->session['course_id']==null)
+                    throw new CHttpException(404,'No course specified. Please Select a course');
+             
+              $model=Module::model()->findByAttributes(array('SerialOrder'=>$id,'CourseNo'=>Yii::app()->session['course_id']));
+               
+            }    
+          else  if(Yii::app()->user->checkAccess(1)){
+                $prof=  Professor::model()->findByAttributes(array('module_id'=>$id,'professor'=>Yii::app()->user->id));
+              if($prof===null)
+                  throw new CHttpException(404,'The requested page does not exist');
+              $model=Module::model()->findByPk($id);
+             }
+                
+            else if(Yii::app()->user->checkAccess(0)){
+                $student= Student::model()->findByPk(Yii::app()->user->id);
+              $model=Module::model()->findByAttributes(array('SerialOrder'=>$id,'CourseNo'=>$student->CourseNo));
+             }
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
+                else
 		return $model;
 	}
 

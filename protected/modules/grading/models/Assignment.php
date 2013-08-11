@@ -81,7 +81,7 @@ class Assignment extends CActiveRecord
 			'assign_no' => 'Assign No',
 			'assign_name' => 'Assign Name',
 			'serial_order' => 'Module ID',
-                    'student_id' => 'Student',
+                        'student_id' => 'Student',
                         'source' => 'File',
 			'source_file_path' => 'Source File Path',
 			'description' => 'Description',
@@ -98,7 +98,10 @@ class Assignment extends CActiveRecord
 		// should not be searched.
 
 		$criteria=new CDbCriteria;
-
+                $criteria->select = '*';
+                $criteria->condition='t.student_id=:value';
+                $criteria->params=array(':value'=>Yii::app()->user->id);
+                
 		$criteria->compare('id',$this->id);
 		$criteria->compare('assign_no',$this->assign_no);
 		$criteria->compare('assign_name',$this->assign_name,true);

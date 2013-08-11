@@ -29,7 +29,7 @@ class CourseController extends Controller
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
 				'actions'=>array('index','view','admin'),
-				'roles'=>array('0','2','3'),
+				'roles'=>array('2','3'),
 			),
                     /*
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -59,6 +59,8 @@ class CourseController extends Controller
                 $criteria->params=array(':value'=>$id);
                 $modules = new CActiveDataProvider("Module",array('criteria'=>$criteria));
                 
+                unset(Yii::app()->session['course_id']);
+                Yii::app()->session['course_id'] = $id;
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
                         'modules'=>$modules,
@@ -131,7 +133,16 @@ class CourseController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Course');
+             if(Yii::app()->session['center_id']==null)
+                    throw new CHttpException(404,'No center specified. Please Select a center');
+             
+                 $criteria=new CDbCriteria;
+                 $criteria->join='LEFT JOIN center_course ON center_course.CourseIndex=t.CourseIndex';
+                $criteria->condition='center_course.centerid=:value';
+                $criteria->params=array(':value'=>Yii::app()->session['center_id']); 
+                
+           
+            $dataProvider=new CActiveDataProvider('Course',array('criteria'=>$criteria));
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
@@ -161,9 +172,14 @@ class CourseController extends Controller
 	 */
 	public function loadModel($id)
 	{
-		$model=Course::model()->findByPk($id);
-		if($model===null)
-			throw new CHttpException(404,'The requested page does not exist.');
+            if(Yii::app()->session['center_id']==null)
+                      throw new CHttpException(404,'The requested page does not exist.');
+                  
+                  $model=Course::model()->findByPk($id);
+		 $centercourse= CenterCourse::model()->findByPk(array('centerid'=>Yii::app()->session['center_id'], 'CourseIndex'=>$id));
+		if($model===null||$centercourse==null)
+                    throw new CHttpException(404,'The requested page does not exist.');
+                else
 		return $model;
 	}
 

@@ -7,8 +7,7 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-	array('label'=>'Create Country', 'url'=>array('create')),
-	array('label'=>'Manage Country', 'url'=>array('admin')),
+	array('label'=>'Grid View', 'url'=>array('admin')),
 );
 ?>
 

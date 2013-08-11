@@ -10,7 +10,7 @@ return array(
         'type' => CAuthItem::TYPE_ROLE,
         'description' => 'Professor',
         'children' => array(
-            'guest', 
+            'Student', 
         ),
         'bizRule' => null,
         'data' => null
@@ -19,7 +19,7 @@ return array(
         'type' => CAuthItem::TYPE_ROLE,
         'description' => 'IntSupervisor',
         'children' => array(
-            'user',          
+            'Professor',          
         ),
         'bizRule' => null,
         'data' => null
@@ -28,7 +28,7 @@ return array(
         'type' => CAuthItem::TYPE_ROLE,
         'description' => 'ExtSupervisor',
         'children' => array(
-            'moderator',        
+            'IntSupervisor',        
         ),
         'bizRule' => null,
         'data' => null

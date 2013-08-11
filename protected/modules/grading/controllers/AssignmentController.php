@@ -28,12 +28,16 @@ class AssignmentController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view'),
+				'actions'=>array('view'),
 				'roles'=>array('0','1','2','3'),
 			),
                     array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('create','DownloadFile','update','delete','admin'),
+				'actions'=>array('DownloadFile'),
 				'roles'=>array('0','1','2','3'),
+			),
+                    array('allow',  // allow all users to perform 'index' and 'view' actions
+				'actions'=>array('create','update','delete'),
+				'roles'=>array('0'),
 			),
                     /*
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -81,8 +85,8 @@ class AssignmentController extends Controller
                         $model->student_id=Yii::app()->user->id;
                         $model->source_file_path='/protected/documents/'.Yii::app()->user->id.'/'.$model->serial_order.'_'.$model->assign_no.'_'.$model->source->name;
 			if($model->save()){
-                            if (!file_exists(Yii::app()->baseUrl. '/protected/documents/'.Yii::app()->user->id)) {
-                                mkdir(Yii::getPathOfAlias('webroot'). '/protected/documents/'.Yii::app()->user->id,0644);
+                            if (!file_exists(Yii::getPathOfAlias('webroot'). '/protected/documents/'.Yii::app()->user->id)) {
+                                mkdir(Yii::getPathOfAlias('webroot'). '/protected/documents/'.Yii::app()->user->id);
                                 }
                             $model->source->saveAs(Yii::getPathOfAlias('webroot') . '/protected/documents/'.Yii::app()->user->id.'/'.$model->serial_order.'_'.$model->assign_no.'_'.$model->source->name);
 				$this->redirect(array('view','id'=>$model->id));
@@ -99,10 +103,13 @@ class AssignmentController extends Controller
             {
               $model=$this->loadModel($id);
               $soursefile = Yii::app()->file->set(Yii::getPathOfAlias('webroot') . $model->source_file_path, true); 
-              if($soursefile->exists)
-                  $soursefile->download($model->assign_no.'_'.$model->assign_name, true);
+              if($soursefile->exists &&($model->student_id==Yii::app()->user->id ||
+                      Yii::app()->user->checkAccess('1') ||Yii::app()->user->checkAccess('2')
+                      ||Yii::app()->user->checkAccess('3')))
+                  
+                  echo ($soursefile->download($model->assign_no.'_'.$model->assign_name, true));
               else {
-                  echo 'File not found';    
+                  throw new CHttpException(404,'The requested file does not exist.');
               }
             }
 	/**
@@ -148,7 +155,12 @@ class AssignmentController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Assignment');
+            $criteria=new CDbCriteria;
+                $criteria->select = '*';
+                $criteria->condition='t.student_id=:value';
+                $criteria->params=array(':value'=>Yii::app()->user->id);
+                
+		$dataProvider=new CActiveDataProvider('Assignment',array('criteria'=>$criteria));
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
@@ -178,7 +190,25 @@ class AssignmentController extends Controller
 	 */
 	public function loadModel($id)
 	{
-		$model=Assignment::model()->findByPk($id);
+            if(Yii::app()->user->checkAccess(3)||Yii::app()->user->checkAccess(2)){
+             if(Yii::app()->session['course_id']==null||Yii::app()->session['module_id']==null)
+                    throw new CHttpException(404,'No course or module specified. Please Select a course and module');
+             
+              $module=Module::model()->findByAttributes(array('SerialOrder'=>Yii::app()->session['module_id'],'CourseNo'=>Yii::app()->session['course_id']));
+               $model=Assignment::model()->findByAttributes(array('id'=>$id,'serial_order'=>$module->SerialOrder));
+            }    
+          else  if(Yii::app()->user->checkAccess(1)){
+              if(Yii::app()->session['module_id']==null)
+                    throw new CHttpException(404,'No module specified. Please Select a module');
+              
+                $model=Assignment::model()->findByAttributes(array('id'=>$id,'serial_order'=>Yii::app()->session['module_id']));
+             
+             }
+                
+            else if(Yii::app()->user->checkAccess(0)){
+                $model=Assignment::model()->findByAttributes(array('id'=>$id,'student_id'=>Yii::app()->user->id));
+             }
+            
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;

@@ -7,8 +7,7 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-	array('label'=>'Create Center', 'url'=>array('create')),
-	array('label'=>'Manage Center', 'url'=>array('admin')),
+	array('label'=>'Grid View', 'url'=>array('admin')),
 );
 ?>
 

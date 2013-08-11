@@ -8,11 +8,8 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-	array('label'=>'List Assignment', 'url'=>array('index')),
-	array('label'=>'Create Assignment', 'url'=>array('create')),
-	array('label'=>'Update Assignment', 'url'=>array('update', 'id'=>$model->id)),
-	array('label'=>'Delete Assignment', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
-	array('label'=>'Manage Assignment', 'url'=>array('admin')),
+	array('label'=>'List View', 'url'=>array('index')),
+	array('label'=>'Grid View', 'url'=>array('admin')),
 );
 ?>
 
