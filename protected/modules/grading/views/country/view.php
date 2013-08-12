@@ -18,7 +18,7 @@ $this->menu=array(
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
 	'attributes'=>array(
-		'country_id',
+		//'country_id',
 		'country_name',
 		'status',
 	),
@@ -31,12 +31,13 @@ $this->menu=array(
 	'id'=>'center-grid',
 	'dataProvider'=>$centers,
 	'columns'=>array(
-		'centerid',
+		//'centerid',
 		'cent_name',
 		'status',
-		'country_id',
+		//'country_id',
 		
 	),
+     'template'=>'{items}',
     'htmlOptions'=>array('style'=>'cursor: pointer;'),
 'selectionChanged'=>"function(id){window.location='" . Yii::app()->urlManager->createUrl('grading/center/view', array('id'=>'')) . "' + $.fn.yiiGridView.getSelection(id);}",
 )); ?>

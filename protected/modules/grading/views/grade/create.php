@@ -8,8 +8,7 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-	array('label'=>'List Grade', 'url'=>array('index')),
-	array('label'=>'Manage Grade', 'url'=>array('admin')),
+	
 );
 ?>
 

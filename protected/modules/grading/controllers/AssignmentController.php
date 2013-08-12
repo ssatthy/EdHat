@@ -62,8 +62,21 @@ class AssignmentController extends Controller
 	 */
 	public function actionView($id)
 	{
+            $grades = Grade::model()->findAllByAttributes(array('assign_id'=>$id));
+                   
+             $gradecolumns  =array();
+            for($i=0;$i<count($grades);$i++){
+                $criteria=new CDbCriteria;
+                $criteria->condition='grade_id=:value';
+               $criteria->params=array(':value'=>$grades[$i]->id);
+                $gradecolumns[$i] = new CActiveDataProvider("gradecolumn",array('criteria'=>$criteria));
+                
+            } 
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
+                        'gradecolumns'=>$gradecolumns,
+                        'gradesby'=>$grades,
+                        
 		));
 	}
 

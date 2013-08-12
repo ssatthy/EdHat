@@ -28,7 +28,7 @@ class GradeController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view'),
+				'actions'=>array('index','view','notification'),
 				'roles'=>array('0','1','2','3'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -63,8 +63,9 @@ class GradeController extends Controller
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionCreate()
+	public function actionCreate($id)
 	{
+       
 		$model=new Grade;
                 $columns=new Gradecolumn;
 		// Uncomment the following line if AJAX validation is needed
@@ -72,27 +73,36 @@ class GradeController extends Controller
 
 		if(isset($_POST['Grade']))
 		{
+                    $assignment = Assignment::model()->findByPk($id);
 			$model->attributes=$_POST['Grade'];
-			if($model->save()){
-                            if(isset($_POST['field'])) {
+                        $model->assign_id=$assignment->id;
+                        $model->student_id=$assignment->student_id;
+                        $model->verifier_id=Yii::app()->user->id;
+                        if(isset($_POST['field'])) {
                                 $columns->grade_id=$model->id;
                                 $columns->field=$_POST['field'];
                                 $columns->marks=$_POST['marks'];
                                 $columns->description=$_POST['description'];
-                     
+                        
+			if($model->save()&&sizeof($columns->field)!=0){
+                            
                                for($i=0;$i < sizeof($columns->field); $i++){
                                    $singlecolumn=new Gradecolumn;
-                                   
                                    $singlecolumn->grade_id=$model->id;
                                    $singlecolumn->field=$columns->field[$i];
                                    $singlecolumn->marks=$columns->marks[$i];
                                    $singlecolumn->description=$columns->description[$i];
-                                  
                                   $singlecolumn->save();
-                                  
-                               } 
+                                  } 
+                                  $notification=new Notification;
+                                  $notification->grade_id=$model->id;
+                                  $notification->assign_id=$model->assign_id;
+                                  $notification->student_id=$model->student_id;
+                                  if($notification->save())
                                     $this->redirect(array('view','id'=>$model->id));
                                 }
+                                else
+                                    throw new CHttpException('Nothing was submitted :(');
                         }
 				
 		}
@@ -167,7 +177,22 @@ class GradeController extends Controller
 		));
 	}
 
-	/**
+        public function actionNotification()
+        {
+            $notification=  Notification::model()->findAllByAttributes(array('student_id'=>Yii::app()->user->id));
+            $assignments  =array();
+            for($i=0;$i<count($notification);$i++){
+                $assignments[$i]=  Assignment::model()->findByPk($notification[$i]->assign_id);
+                 } 
+            $this->render('notification',array(
+                'notifications'=>$notification,
+                'assignments'=>$assignments,
+                ));
+            for($i=0;$i<count($notification);$i++)
+            $notification[$i]->delete();
+        }
+
+        /**
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.
 	 * @param integer $id the ID of the model to be loaded

@@ -194,8 +194,10 @@ class ModuleController extends Controller
                 $criteria->params=array(':value'=>$student->CourseNo);
                 $model = new CActiveDataProvider("Module",array('criteria'=>$criteria));
 	
+                $notification=  Notification::model()->findAllByAttributes(array('student_id'=>$student->EdHatNo));
                 $this->render('modulestudent',array(
 			'model'=>$model,
+                        'notifications'=> $notification,
 		));
 	}
 

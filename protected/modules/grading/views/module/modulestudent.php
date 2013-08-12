@@ -8,15 +8,20 @@ $this->breadcrumbs=array(
 );
 
 ?>
+<?php
+$this->menu=array(
+	array('label'=>'Notifications('.count($notifications).')','url'=>array('grade/notification')),
+	
+);
+?>
 
 <h1>Modules List</h1>
-
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'module-grid',
 	'dataProvider'=>$model,
 	'columns'=>array(
-		'SerialOrder',
+	//	'SerialOrder',
 		'ModuleIndex',
 		'ModuleName',
 		'CourseNo',
@@ -28,6 +33,7 @@ $this->breadcrumbs=array(
 		*/
 		
 	),
+    'template'=>'{items}',
         'htmlOptions'=>array('style'=>'cursor: pointer;'),
 'selectionChanged'=>"function(id){window.location='" . Yii::app()->urlManager->createUrl('grading/module/viewstudent', array('id'=>'')) . "' + $.fn.yiiGridView.getSelection(id);}",
 

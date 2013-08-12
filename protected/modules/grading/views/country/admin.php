@@ -39,17 +39,13 @@ $('.search-form form').submit(function(){
 	'dataProvider'=>$model->search(),
 	'filter'=>$model,
 	'columns'=>array(
-		'country_id',
+		//'country_id',
 		'country_name',
 		'status',
 		
 	),
+     'template'=>'{items}',
     'htmlOptions'=>array('style'=>'cursor: pointer;'),
 'selectionChanged'=>"function(id){window.location='" . Yii::app()->urlManager->createUrl('grading/country/view', array('id'=>'')) . "' + $.fn.yiiGridView.getSelection(id);}",
 
 )); ?>
-
-<p>
-You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>
-or <b>=</b>) at the beginning of each of your search values to specify how the comparison should be done.
-</p>

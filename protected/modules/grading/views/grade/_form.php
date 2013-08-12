@@ -15,6 +15,17 @@
 
 	<?php echo $form->errorSummary($model); ?>
 
+           <div class="row">
+            <?php $this->widget('ext.appendo.JAppendo',array(
+                'id' => 'repeateEnum',        
+                'columns' => $columns,
+                'viewName' => 'gradecolumns',
+                'labelDel' => 'Remove Row'
+                //'cssFile' => 'css/jquery.appendo2.css'
+            )); ?>
+            </div>
+        
+        <?php /*
 	<div class="row">
 		<?php echo $form->labelEx($model,'assign_id'); ?>
 		<?php echo $form->textField($model,'assign_id'); ?>
@@ -32,7 +43,7 @@
 		<?php echo $form->textField($model,'verifier_id',array('size'=>60,'maxlength'=>255)); ?>
 		<?php echo $form->error($model,'verifier_id'); ?>
 	</div>
-
+*/?>
 	<div class="row">
 		<?php echo $form->labelEx($model,'comment'); ?>
 		<?php echo $form->textArea($model,'comment',array('rows'=>6, 'cols'=>50)); ?>
@@ -41,15 +52,7 @@
 
 <!-- grade columns -->
 
-    <div class="row">
-    <?php $this->widget('ext.appendo.JAppendo',array(
-        'id' => 'repeateEnum',        
-        'columns' => $columns,
-        'viewName' => 'gradecolumns',
-        'labelDel' => 'Remove Row'
-        //'cssFile' => 'css/jquery.appendo2.css'
-    )); ?>
-    </div>
+ 
 	
 
 

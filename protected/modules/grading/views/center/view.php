@@ -18,10 +18,10 @@ $this->menu=array(
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
 	'attributes'=>array(
-		'centerid',
+		//'centerid',
 		'cent_name',
 		'status',
-		'country_id',
+		//'country_id',
 	),
 )); ?>
 <br>
@@ -36,9 +36,9 @@ $this->menu=array(
 		'CourseIndex',
 		'CourseName',
 		'FacultyName',
-		'Catagory',
-		'Level',
-		'SemiCount',
+		//'Catagory',
+		//'Level',
+		//'SemiCount',
 		/*
 		'CertificateFee',
 		'CourseType',
@@ -46,6 +46,7 @@ $this->menu=array(
 		*/
 		
 	),
+     'template'=>'{items}',
     'htmlOptions'=>array('style'=>'cursor: pointer;'),
 'selectionChanged'=>"function(id){window.location='" . Yii::app()->urlManager->createUrl('grading/course/view', array('id'=>'')) . "' + $.fn.yiiGridView.getSelection(id);}",
 )); ?>

@@ -17,14 +17,14 @@ $this->menu=array(
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
 	'attributes'=>array(
-		'SerialOrder',
+		//'SerialOrder',
 		'ModuleIndex',
 		'ModuleName',
 		'CourseNo',
 		'Semister',
 		'Catagery',
-		'Cradit',
-		'Assement',
+		//'Cradit',
+		//'Assement',
 	),
 )); ?>
 <br>
@@ -40,10 +40,11 @@ $this->menu=array(
 		'assign_no',
 		'assign_name',
 		//'serial_order',
-		'source_file_path',
+		//'source_file_path',
 		'description',
 		
 	),
+     'template'=>'{items}',
      'htmlOptions'=>array('style'=>'cursor: pointer;'),
 'selectionChanged'=>"function(id){window.location='" . Yii::app()->urlManager->createUrl('grading/assignment/view', array('id'=>'')) . "' + $.fn.yiiGridView.getSelection(id);}",
 

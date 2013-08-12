@@ -21,11 +21,11 @@ $this->menu=array(
 		'CourseName',
 		'FacultyName',
 		'Catagory',
-		'Level',
-		'SemiCount',
-		'CertificateFee',
-		'CourseType',
-		'EnterdBy',
+		//'Level',
+		//'SemiCount',
+		//'CertificateFee',
+		//'CourseType',
+		//'EnterdBy',
 	),
 )); ?>
 <br>
@@ -49,6 +49,7 @@ $this->menu=array(
 		*/
 		
 	),
+     'template'=>'{items}',
         'htmlOptions'=>array('style'=>'cursor: pointer;'),
 'selectionChanged'=>"function(id){window.location='" . Yii::app()->urlManager->createUrl('grading/module/view', array('id'=>'')) . "' + $.fn.yiiGridView.getSelection(id);}",
 

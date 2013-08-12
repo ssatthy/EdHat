@@ -1,7 +1,7 @@
 <?php
 $this->menu=array(
-	array('label'=>'List Assignment', 'url'=>array('assignment/index')),
-	array('label'=>'Create Assignment', 'url'=>array('assignment/create')),
+    array('label'=>'Submit Assignment', 'url'=>array('assignment/create')),
+	array('label'=>'Download Assignments', 'url'=>array('assignment/index')),
 );
 ?>
 <h1><?php echo $model->ModuleName; ?></h1>
@@ -9,8 +9,8 @@ $this->menu=array(
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
 	'attributes'=>array(
-		'SerialOrder',
-		'ModuleIndex',
+		//'SerialOrder',
+		//'ModuleIndex',
 		'ModuleName',
 		'CourseNo',
 		'Semister',
@@ -32,10 +32,11 @@ $this->menu=array(
 		'assign_no',
 		'assign_name',
 		//'serial_order',
-		'source_file_path',
+		//'source_file_path',
 		'description',
 		
 	),
+    'template'=>'{items}',
      'htmlOptions'=>array('style'=>'cursor: pointer;'),
 'selectionChanged'=>"function(id){window.location='" . Yii::app()->urlManager->createUrl('grading/assignment/view', array('id'=>'')) . "' + $.fn.yiiGridView.getSelection(id);}",
 

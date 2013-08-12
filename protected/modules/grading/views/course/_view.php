@@ -28,12 +28,12 @@
 	<b><?php echo CHtml::encode($data->getAttributeLabel('SemiCount')); ?>:</b>
 	<?php echo CHtml::encode($data->SemiCount); ?>
 	<br />
-
+<?php /*
 	<b><?php echo CHtml::encode($data->getAttributeLabel('CertificateFee')); ?>:</b>
 	<?php echo CHtml::encode($data->CertificateFee); ?>
 	<br />
 
-	<?php /*
+	
 	<b><?php echo CHtml::encode($data->getAttributeLabel('CourseType')); ?>:</b>
 	<?php echo CHtml::encode($data->CourseType); ?>
 	<br />
