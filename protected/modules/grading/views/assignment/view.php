@@ -22,7 +22,13 @@ $this->menu=array(
 		'assign_no',
 		'assign_name',
 		//'serial_order',
-		//'source_file_path',
+		// 'source_file_path',
+            
+            array(               // related city displayed as a link
+            'label'=>'File',
+            'type'=>'raw',
+            'value'=>CHtml::link(CHtml::encode('Download'), array('assignment/DownloadFile','id'=>$model->id)),
+        ),
 		'description',
 	),
 )); ?>
@@ -32,9 +38,11 @@ $this->menu=array(
 <h1>Evaluations</h1>
 <?php
 
+if(count($gradecolumns)==0)
+    echo 'Not evaluated yet';
 for($i=0;$i<count($gradecolumns);$i++){
     
-    echo 'Evaluated By: '.$gradesby[$i]->verifier_id;
+    echo '<b>Evaluated By: '.$gradesby[$i]->verifier_id.'</b>';
  $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'gradecolumn-grid',
 	'dataProvider'=>$gradecolumns[$i],

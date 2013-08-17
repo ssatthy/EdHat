@@ -84,7 +84,7 @@ class GradeController extends Controller
                                 $columns->marks=$_POST['marks'];
                                 $columns->description=$_POST['description'];
                         
-			if($model->save()&&sizeof($columns->field)!=0){
+			if($model->save()){
                             
                                for($i=0;$i < sizeof($columns->field); $i++){
                                    $singlecolumn=new Gradecolumn;
@@ -99,7 +99,7 @@ class GradeController extends Controller
                                   $notification->assign_id=$model->assign_id;
                                   $notification->student_id=$model->student_id;
                                   if($notification->save())
-                                    $this->redirect(array('view','id'=>$model->id));
+                                    $this->redirect(array('assignment/view','id'=>$id));
                                 }
                                 else
                                     throw new CHttpException('Nothing was submitted :(');

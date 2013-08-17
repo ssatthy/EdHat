@@ -8,12 +8,7 @@ $this->breadcrumbs=array(
 );
 
 ?>
-<?php
-$this->menu=array(
-	array('label'=>'Notifications('.count($notifications).')','url'=>array('grade/notification')),
-	
-);
-?>
+
 
 <h1>Modules List</h1>
 

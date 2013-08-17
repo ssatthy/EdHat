@@ -9,7 +9,7 @@ $this->breadcrumbs=array(
 
 $this->menu=array(
 	array('label'=>'List Module', 'url'=>array('index')),
-	array('label'=>'Create Module', 'url'=>array('create')),
+	
 );
 
 Yii::app()->clientScript->registerScript('search', "
@@ -39,7 +39,7 @@ $('.search-form form').submit(function(){
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'module-grid',
 	'dataProvider'=>$model->search(),
-	'filter'=>$model,
+	
 	'columns'=>array(
 		//'SerialOrder',
 		'ModuleIndex',

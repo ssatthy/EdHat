@@ -11,6 +11,14 @@
 	<br />
 */
     ?>
+        <b><?php echo CHtml::encode('Course Name'); ?>:</b>
+	<?php echo CHtml::encode($coursename); ?>
+	<br />
+        
+        <b><?php echo CHtml::encode('Module Name'); ?>:</b>
+	<?php echo CHtml::encode($modulename); ?>
+	<br />
+        
 	<b><?php echo CHtml::encode($data->getAttributeLabel('assign_no')); ?>:</b>
         <?php echo CHtml::link(CHtml::encode($data->assign_no), array('view', 'id'=>$data->id)); ?>
 	<br />

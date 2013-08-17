@@ -36,8 +36,22 @@
 
 div.form
 {
-}
 
+
+}
+#login
+{
+    margin: 30px 50px 30px 50px;
+    
+width: 170px;
+
+border:2px solid #a1a1a1;
+padding:10px 40px; 
+background:#A9D0F5;
+margin-left:auto;
+margin-right:auto;
+border-radius:25px;
+}
 div.form input,
 div.form textarea,
 div.form select

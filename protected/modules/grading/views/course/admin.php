@@ -38,7 +38,7 @@ $('.search-form form').submit(function(){
 <?php $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'course-grid',
 	'dataProvider'=>$model->search(),
-	'filter'=>$model,
+	
 	'columns'=>array(
 		'CourseIndex',
 		'CourseName',

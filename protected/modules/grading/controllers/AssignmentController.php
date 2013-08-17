@@ -69,8 +69,20 @@ class AssignmentController extends Controller
                 $criteria=new CDbCriteria;
                 $criteria->condition='grade_id=:value';
                $criteria->params=array(':value'=>$grades[$i]->id);
-                $gradecolumns[$i] = new CActiveDataProvider("gradecolumn",array('criteria'=>$criteria));
+                $gradecolumns[$i] = new CActiveDataProvider("Gradecolumn",array('criteria'=>$criteria));
                 
+                $ext = ExtSupervisor::model()->findAllByAttributes(array('extsupervisor'=>$grades[$i]->verifier_id));
+                $int = IntSupervisor::model()->findAllByAttributes(array('intsupervisor'=>$grades[$i]->verifier_id));
+                $prof = Professor::model()->findAllByAttributes(array('professor'=>$grades[$i]->verifier_id));
+                if(sizeof($ext)>0){
+                    $grades[$i]->verifier_id= 'External Supervisor: '.$grades[$i]->verifier_id;
+                 }
+                elseif(sizeof($int)>0){
+                 $grades[$i]->verifier_id= 'Internal Supervisor: '.$grades[$i]->verifier_id;
+                }
+                elseif (sizeof ($prof)>0) {
+                    $grades[$i]->verifier_id= 'Professor: '.$grades[$i]->verifier_id;
+             }
             } 
 		$this->render('view',array(
 			'model'=>$this->loadModel($id),
@@ -173,9 +185,14 @@ class AssignmentController extends Controller
                 $criteria->condition='t.student_id=:value';
                 $criteria->params=array(':value'=>Yii::app()->user->id);
                 
+                $module = Module::model()->findByPk(Yii::app()->session['module_id']);
+                $course = Course::model()->findByPk($module->CourseNo);
+                
 		$dataProvider=new CActiveDataProvider('Assignment',array('criteria'=>$criteria));
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
+                        'modulename'=>$module->ModuleName,
+                        'coursename'=>$course->CourseName,
 		));
 	}
 

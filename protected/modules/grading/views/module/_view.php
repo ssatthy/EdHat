@@ -4,11 +4,13 @@
 ?>
 
 <div class="view">
-
+<?php
+/*
 	<b><?php echo CHtml::encode($data->getAttributeLabel('SerialOrder')); ?>:</b>
 	<?php echo CHtml::link(CHtml::encode($data->SerialOrder), array('view', 'id'=>$data->SerialOrder)); ?>
 	<br />
-
+*/
+?>
 	<b><?php echo CHtml::encode($data->getAttributeLabel('ModuleIndex')); ?>:</b>
 	<?php echo CHtml::encode($data->ModuleIndex); ?>
 	<br />

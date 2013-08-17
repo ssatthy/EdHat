@@ -78,12 +78,11 @@ class Assignment extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'assign_no' => 'Assign No',
-			'assign_name' => 'Assign Name',
+			'assign_no' => 'Assignment No',
+			'assign_name' => 'Assignment Name',
 			'serial_order' => 'Module ID',
                         'student_id' => 'Student',
-                        'source' => 'File',
-			'source_file_path' => 'Source File Path',
+			'source_file_path' => 'File',
 			'description' => 'Description',
 		);
 	}

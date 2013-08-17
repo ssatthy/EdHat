@@ -80,6 +80,9 @@ class ModuleController extends Controller
                 $criteria->params=array(':value'=>$id);
                 $assingment = new CActiveDataProvider("Assignment",array('criteria'=>$criteria));
                 
+                unset(Yii::app()->session['module_id']);
+                Yii::app()->session['module_id'] = $id;
+                
 		$this->render('moduleviewstudent',array(
 			'model'=>$this->loadModel($id),
                         'assignment'=>$assingment,
@@ -194,7 +197,9 @@ class ModuleController extends Controller
                 $criteria->params=array(':value'=>$student->CourseNo);
                 $model = new CActiveDataProvider("Module",array('criteria'=>$criteria));
 	
+                
                 $notification=  Notification::model()->findAllByAttributes(array('student_id'=>$student->EdHatNo));
+                Yii::app()->session['notifications']=  sizeof($notification);
                 $this->render('modulestudent',array(
 			'model'=>$model,
                         'notifications'=> $notification,
