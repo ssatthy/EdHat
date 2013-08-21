@@ -1,6 +1,6 @@
 <?php
-/* @var $this AssignmentController */
-/* @var $model Assignment */
+/* @var $this LearningOCController */
+/* @var $model LearningOC */
 /* @var $form CActiveForm */
 ?>
 
@@ -12,8 +12,8 @@
 )); ?>
 
 	<div class="row">
-		<?php echo $form->label($model,'mngid'); ?>
-		<?php echo $form->textField($model,'mngid'); ?>
+		<?php echo $form->label($model,'lerocid'); ?>
+		<?php echo $form->textField($model,'lerocid'); ?>
 	</div>
 
 	<div class="row">
@@ -22,13 +22,18 @@
 	</div>
 
 	<div class="row">
-		<?php echo $form->label($model,'assign_no'); ?>
-		<?php echo $form->textField($model,'assign_no'); ?>
+		<?php echo $form->label($model,'title'); ?>
+		<?php echo $form->textField($model,'title',array('size'=>60,'maxlength'=>660)); ?>
 	</div>
 
 	<div class="row">
-		<?php echo $form->label($model,'title'); ?>
-		<?php echo $form->textArea($model,'title',array('rows'=>6, 'cols'=>50)); ?>
+		<?php echo $form->label($model,'discription'); ?>
+		<?php echo $form->textArea($model,'discription',array('rows'=>6, 'cols'=>50)); ?>
+	</div>
+
+	<div class="row">
+		<?php echo $form->label($model,'qpersentage'); ?>
+		<?php echo $form->textField($model,'qpersentage'); ?>
 	</div>
 
 	<div class="row">

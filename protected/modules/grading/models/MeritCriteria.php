@@ -1,18 +1,24 @@
 <?php
 
 /**
- * This is the model class for table "prof_column".
+ * This is the model class for table "merit_criteria".
  *
- * The followings are the available columns in table 'prof_column':
+ * The followings are the available columns in table 'merit_criteria':
  * @property integer $id
- * @property string $profcolumn
+ * @property integer $unit_id
+ * @property string $criteria_no
+ * @property string $criteria_title
+ *
+ * The followings are the available model relations:
+ * @property TblModule $unit
+ * @property MeritCriteriaItem[] $meritCriteriaItems
  */
-class ProfColumn extends CActiveRecord
+class MeritCriteria extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
-	 * @return ProfColumn the static model class
+	 * @return MeritCriteria the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -24,7 +30,7 @@ class ProfColumn extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'prof_column';
+		return 'merit_criteria';
 	}
 
 	/**
@@ -35,12 +41,12 @@ class ProfColumn extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('id, profcolumn', 'required'),
-			array('id', 'numerical', 'integerOnly'=>true),
-			array('profcolumn', 'length', 'max'=>60),
+			array('unit_id, criteria_no, criteria_title', 'required'),
+			array('unit_id', 'numerical', 'integerOnly'=>true),
+			array('criteria_no', 'length', 'max'=>10),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, profcolumn', 'safe', 'on'=>'search'),
+			array('id, unit_id, criteria_no, criteria_title', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -52,6 +58,8 @@ class ProfColumn extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+			'unit' => array(self::BELONGS_TO, 'TblModule', 'unit_id'),
+			'meritCriteriaItems' => array(self::HAS_MANY, 'MeritCriteriaItem', 'meritc_id'),
 		);
 	}
 
@@ -62,7 +70,9 @@ class ProfColumn extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'profcolumn' => 'Profcolumn',
+			'unit_id' => 'Unit',
+			'criteria_no' => 'Criteria No',
+			'criteria_title' => 'Criteria Title',
 		);
 	}
 
@@ -78,7 +88,9 @@ class ProfColumn extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id);
-		$criteria->compare('profcolumn',$this->profcolumn,true);
+		$criteria->compare('unit_id',$this->unit_id);
+		$criteria->compare('criteria_no',$this->criteria_no,true);
+		$criteria->compare('criteria_title',$this->criteria_title,true);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

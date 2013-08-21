@@ -28,28 +28,17 @@ class AssignmentController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('view','index'),
-				'roles'=>array('0','1','2','3'),
+				'actions'=>array('index','view'),
+				'users'=>array('*'),
 			),
-                    array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('DownloadFile'),
-				'roles'=>array('0','1','2','3'),
-			),
-                    array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('create','update','delete'),
-				'roles'=>array('0'),
-			),
-                    /*
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update'),
+				'actions'=>array('create','update','addpasscriteriaitem','addtask','addsubtask'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
 				'actions'=>array('admin','delete'),
 				'users'=>array('admin'),
 			),
-                     * 
-                     */
 			array('deny',  // deny all users
 				'users'=>array('*'),
 			),
@@ -62,33 +51,35 @@ class AssignmentController extends Controller
 	 */
 	public function actionView($id)
 	{
-            $grades = Grade::model()->findAllByAttributes(array('assign_id'=>$id));
-                   
-             $gradecolumns  =array();
-            for($i=0;$i<count($grades);$i++){
-                $criteria=new CDbCriteria;
-                $criteria->condition='grade_id=:value';
-               $criteria->params=array(':value'=>$grades[$i]->id);
-                $gradecolumns[$i] = new CActiveDataProvider("Gradecolumn",array('criteria'=>$criteria));
+            $assignment = $this->loadModel($id);
+            $pass_criteria = PassCriteria::model()->findAllByAttributes(array('unit_id'=>$assignment->unitid));
+            
+            $pass_cri_items  =array();
+            for($i=0;$i<count($pass_criteria);$i++){
+                 $criteria=new CDbCriteria;
+                $criteria->condition='pass_id=:value';
+               $criteria->params=array(':value'=>$pass_criteria[$i]->id);
+                $pass_cri_items[$i] = new CActiveDataProvider("PassCriteriaItem",array('criteria'=>$criteria));
                 
-                $ext = ExtSupervisor::model()->findAllByAttributes(array('extsupervisor'=>$grades[$i]->verifier_id));
-                $int = IntSupervisor::model()->findAllByAttributes(array('intsupervisor'=>$grades[$i]->verifier_id));
-                $prof = Professor::model()->findAllByAttributes(array('professor'=>$grades[$i]->verifier_id));
-                if(sizeof($ext)>0){
-                    $grades[$i]->verifier_id= 'External Supervisor: '.$grades[$i]->verifier_id;
-                 }
-                elseif(sizeof($int)>0){
-                 $grades[$i]->verifier_id= 'Internal Supervisor: '.$grades[$i]->verifier_id;
-                }
-                elseif (sizeof ($prof)>0) {
-                    $grades[$i]->verifier_id= 'Professor: '.$grades[$i]->verifier_id;
-             }
-            } 
+            }
+             $tasks = Task::model()->findAllByAttributes(array('assign_id'=>$id));
+            $subtasks=array();
+            for($i=0;$i<count($tasks);$i++){
+                 $criteria=new CDbCriteria;
+                $criteria->condition='task_id=:value';
+               $criteria->params=array(':value'=>$tasks[$i]->id);
+                $subtasks[$i] = new CActiveDataProvider("Subtask",array('criteria'=>$criteria));
+                
+            }
+            
+            unset(Yii::app()->session['assign_id']);
+                Yii::app()->session['assign_id'] = $id;
 		$this->render('view',array(
-			'model'=>$this->loadModel($id),
-                        'gradecolumns'=>$gradecolumns,
-                        'gradesby'=>$grades,
-                        
+			'model'=>$assignment,
+                        'pass_criteria'=>$pass_criteria,
+                        'pass_cri_items'=>$pass_cri_items,
+                        'tasks'=>$tasks,
+                        'subtasks'=>$subtasks,
 		));
 	}
 
@@ -106,38 +97,151 @@ class AssignmentController extends Controller
 		if(isset($_POST['Assignment']))
 		{
 			$model->attributes=$_POST['Assignment'];
-                        $model->source=CUploadedFile::getInstance($model,'source');
-                        $model->student_id=Yii::app()->user->id;
-                        $model->source_file_path='/protected/documents/'.Yii::app()->user->id.'/'.$model->serial_order.'_'.$model->assign_no.'_'.$model->source->name;
-			if($model->save()){
-                            if (!file_exists(Yii::getPathOfAlias('webroot'). '/protected/documents/'.Yii::app()->user->id)) {
-                                mkdir(Yii::getPathOfAlias('webroot'). '/protected/documents/'.Yii::app()->user->id);
-                                }
-                            $model->source->saveAs(Yii::getPathOfAlias('webroot') . '/protected/documents/'.Yii::app()->user->id.'/'.$model->serial_order.'_'.$model->assign_no.'_'.$model->source->name);
-				$this->redirect(array('view','id'=>$model->id));
-                }
-                
-                        }
+                        $model->unitid=Yii::app()->session['module_id'];
+                        $model->status='Not Finished';
+			if($model->save())
+				$this->redirect(array('view','id'=>$model->mngid));
+		}
 
 		$this->render('create',array(
 			'model'=>$model,
 		));
 	}
 
-        public function actionDownloadFile($id)
-            {
-              $model=$this->loadModel($id);
-              $soursefile = Yii::app()->file->set(Yii::getPathOfAlias('webroot') . $model->source_file_path, true); 
-              if($soursefile->exists &&($model->student_id==Yii::app()->user->id ||
-                      Yii::app()->user->checkAccess('1') ||Yii::app()->user->checkAccess('2')
-                      ||Yii::app()->user->checkAccess('3')))
-                  
-                 $soursefile->send($model->assign_no.'_'.$model->assign_name, false);
-              else {
-                  throw new CHttpException(404,'The requested file does not exist.');
-              }
-            }
-	/**
+        
+        public function actionAddPassCriteriaItem($id)
+        {
+            $passCriteriaItems = new PassCriteriaItem();
+            
+               if(isset($_POST['item_no'])) {
+                                $passCriteriaItems-> pass_id=$_POST['pass_id'];
+                                $passCriteriaItems->item_no=$_POST['item_no'];
+                                $passCriteriaItems->title=$_POST['title'];
+                        if( sizeof($passCriteriaItems->item_no)>0){
+                            $success=false;
+                               for($i=0;$i < sizeof($passCriteriaItems->item_no); $i++){
+                                   $success=false;
+                                   $item=new PassCriteriaItem;
+                                   $item->assign_id=$id;
+                                   $item->pass_id=$passCriteriaItems->pass_id[$i];
+                                   $item->item_no=$passCriteriaItems->item_no[$i];
+                                   $item->title=$passCriteriaItems->title[$i];
+                                   
+                                  if($item->save())
+                                      $success=true;
+                                  
+                                  } 
+                                  if($success)
+                                  $this->redirect(array('assignment/view','id'=>$id));
+                                  else
+                                    throw new CHttpException('Nothing was submitted :(');
+                                }
+                                else
+                                    throw new CHttpException('Nothing was submitted :(');
+                        }
+                      
+           
+            $this->render('add_pass_items',array(
+			'model'=>$this->loadModel($id),
+                        'criteriaitems'=>$passCriteriaItems,
+		));
+            
+        }
+        
+        public function actionAddTask($id)
+        {
+           
+            $task = new Task();
+            
+                 if(isset($_POST['task_no'])) {
+                                $task->lo_id=$_POST['lo_id'];
+                                $task->task_no=$_POST['task_no'];
+                                
+                        if( sizeof($task->task_no)>0){
+                            $success=false;
+                               for($i=0;$i < sizeof($task->task_no); $i++){
+                                   $success=false;
+                                   $item=new Task();
+                                   $item->assign_id=$id;
+                                   $item->lo_id=$task->lo_id[$i];
+                                   $item->task_no=$task->task_no[$i];
+                                   
+                                  if($item->save())
+                                      $success=true;
+                                  
+                                  } 
+                                  if($success)
+                                  $this->redirect(array('assignment/view','id'=>$id));
+                                  else
+                                    throw new CHttpException('Nothing was submitted :(');
+                                }
+                                else
+                                    throw new CHttpException('Nothing was submitted :(');
+                        }
+                        
+           
+            $this->render('add_task',array(
+			'model'=>$this->loadModel($id),
+                        'task'=>$task,
+		));
+            
+        }
+
+        public function actionAddsubtask($id)
+        {
+            $subtask = new Subtask();
+                 if(isset($_POST['sub_no'])) {
+                                $subtask->task_id=$_POST['task_id'];
+                                $subtask->sub_no=$_POST['sub_no'];
+                                $subtask->title=$_POST['title'];
+                                $subtask->max_marks=$_POST['max_marks'];
+                                $subtask->pass_crit_item_id=$_POST['pass_crit_item_id'];
+                                
+                                
+                        if( sizeof($subtask->task_id)>0){
+                            $success=false;
+                               for($i=0;$i < sizeof($subtask->task_id); $i++){
+                                   $success=false;
+                                   $item=new Subtask();
+                                   $item->task_id=$subtask->task_id[$i];
+                                   $item->sub_no=$subtask->sub_no[$i];
+                                   $item->title=$subtask->title[$i];
+                                   $item->max_marks=$subtask->max_marks[$i];
+                                   $item->pass_crit_item_id=$subtask->pass_crit_item_id[$i];
+                                   
+                                  if($item->save())
+                                      $success=true;
+                                  
+                                  } 
+                                  if($success)
+                                  $this->redirect(array('assignment/view','id'=>$id));
+                                  else
+                                    throw new CHttpException('Nothing was submitted :(');
+                                }
+                                else
+                                    throw new CHttpException('Nothing was submitted :(');
+                        }
+                        
+           
+            $this->render('add_subtask',array(
+			'model'=>$this->loadModel($id),
+                        'subtask'=>$subtask,
+		));
+        }
+
+        public function getPassCriteria()
+        {  
+		$criterialist = CHtml::listData(PassCriteria::model()->findAllByAttributes(array('unit_id'=>Yii::app()->session['module_id'])),'id','criteria_no');
+		return $criterialist;
+	}
+
+        public function getLearningOC()
+        {  
+		$criterialist = CHtml::listData(LearningOC::model()->findAllByAttributes(array('unitid'=>Yii::app()->session['module_id'])),'lerocid','title');
+		return $criterialist;
+	}
+
+        /**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param integer $id the ID of the model to be updated
@@ -153,7 +257,7 @@ class AssignmentController extends Controller
 		{
 			$model->attributes=$_POST['Assignment'];
 			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+				$this->redirect(array('view','id'=>$model->mngid));
 		}
 
 		$this->render('update',array(
@@ -180,19 +284,9 @@ class AssignmentController extends Controller
 	 */
 	public function actionIndex()
 	{
-            $criteria=new CDbCriteria;
-                $criteria->select = '*';
-                $criteria->condition='t.student_id=:value';
-                $criteria->params=array(':value'=>Yii::app()->user->id);
-                
-                $module = Module::model()->findByPk(Yii::app()->session['module_id']);
-                $course = Course::model()->findByPk($module->CourseNo);
-                
-		$dataProvider=new CActiveDataProvider('Assignment',array('criteria'=>$criteria));
+		$dataProvider=new CActiveDataProvider('Assignment');
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
-                        'modulename'=>$module->ModuleName,
-                        'coursename'=>$course->CourseName,
 		));
 	}
 
@@ -220,37 +314,12 @@ class AssignmentController extends Controller
 	 */
 	public function loadModel($id)
 	{
-            if(Yii::app()->user->checkAccess(3)||Yii::app()->user->checkAccess(2)){
-             if(Yii::app()->session['course_id']==null||Yii::app()->session['module_id']==null)
-                    throw new CHttpException(404,'No course or module specified. Please Select a course and module');
-             
-              $module=Module::model()->findByAttributes(array('SerialOrder'=>Yii::app()->session['module_id'],'CourseNo'=>Yii::app()->session['course_id']));
-               $model=Assignment::model()->findByAttributes(array('id'=>$id,'serial_order'=>$module->SerialOrder));
-            }    
-          else  if(Yii::app()->user->checkAccess(1)){
-              if(Yii::app()->session['module_id']==null)
-                    throw new CHttpException(404,'No module specified. Please Select a module');
-              
-                $model=Assignment::model()->findByAttributes(array('id'=>$id,'serial_order'=>Yii::app()->session['module_id']));
-             
-             }
-                
-            else if(Yii::app()->user->checkAccess(0)){
-                $model=Assignment::model()->findByAttributes(array('id'=>$id,'student_id'=>Yii::app()->user->id));
-             }
-            
+		$model=Assignment::model()->findByPk($id);
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
-                else
 		return $model;
 	}
-            //get list of modules that user has entrolled
-        public function getModuleList(){
-            $student = Student::model()->findByPk(Yii::app()->user->id);
-		$proflist = CHtml::listData(Module::model()->findAllByAttributes(array('CourseNo' => $student->CourseNo)),'SerialOrder','ModuleName');
-		return $proflist;
-	}
-        
+
 	/**
 	 * Performs the AJAX validation.
 	 * @param Assignment $model the model to be validated

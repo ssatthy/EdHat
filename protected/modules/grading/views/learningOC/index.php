@@ -1,18 +1,18 @@
 <?php
-/* @var $this AssignmentController */
+/* @var $this LearningOCController */
 /* @var $dataProvider CActiveDataProvider */
 
 $this->breadcrumbs=array(
-	'Assignments',
+	'Learning Ocs',
 );
 
 $this->menu=array(
-	array('label'=>'Create Assignment', 'url'=>array('create')),
-	array('label'=>'Manage Assignment', 'url'=>array('admin')),
+	array('label'=>'Create LearningOC', 'url'=>array('create')),
+	array('label'=>'Manage LearningOC', 'url'=>array('admin')),
 );
 ?>
 
-<h1>Assignments</h1>
+<h1>Learning Ocs</h1>
 
 <?php $this->widget('zii.widgets.CListView', array(
 	'dataProvider'=>$dataProvider,

@@ -1,18 +1,18 @@
 <?php
-/* @var $this AssignmentController */
+/* @var $this MeritCriteriaController */
 /* @var $dataProvider CActiveDataProvider */
 
 $this->breadcrumbs=array(
-	'Assignments',
+	'Merit Criterias',
 );
 
 $this->menu=array(
-	array('label'=>'Create Assignment', 'url'=>array('create')),
-	array('label'=>'Manage Assignment', 'url'=>array('admin')),
+	array('label'=>'Create MeritCriteria', 'url'=>array('create')),
+	array('label'=>'Manage MeritCriteria', 'url'=>array('admin')),
 );
 ?>
 
-<h1>Assignments</h1>
+<h1>Merit Criterias</h1>
 
 <?php $this->widget('zii.widgets.CListView', array(
 	'dataProvider'=>$dataProvider,

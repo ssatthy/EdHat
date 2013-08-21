@@ -50,7 +50,7 @@ $home ;
 				array('label'=>'Contact', 'url'=>array('/site/contact')),
 				array('label'=>'Login', 'url'=>array('/site/login'), 'visible'=>Yii::app()->user->isGuest),
 				array('label'=>'Logout ('.Yii::app()->user->name.')', 'url'=>array('/site/logout'), 'visible'=>!Yii::app()->user->isGuest),
-                            array('label'=>'<i id="noti" style="float:right;margin-right:50px;">Notification ('.Yii::app()->session['notifications'].')</i>', 'url'=>array('grade/notification'), 'visible'=>Yii::app()->user->checkAccess('0'))
+                            array('label'=>'<i style="float:right;margin-right:50px;">Notifications ('.Yii::app()->session['notifications'].')</i>', 'url'=>array('grade/notification'), 'visible'=>Yii::app()->user->checkAccess('0'))
 			),
 		)); ?>
 	</div><!-- mainmenu -->

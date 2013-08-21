@@ -1,27 +1,27 @@
 <?php
 
 /**
- * This is the model class for table "asgmng".
+ * This is the model class for table "subtask".
  *
- * The followings are the available columns in table 'asgmng':
- * @property integer $mngid
- * @property integer $unitid
- * @property integer $assign_no
+ * The followings are the available columns in table 'subtask':
+ * @property integer $id
+ * @property integer $task_id
+ * @property string $sub_no
  * @property string $title
- * @property string $status
+ * @property integer $pass_crit_item_id
+ * @property integer $max_marks
  *
  * The followings are the available model relations:
- * @property TblModule $unit
- * @property CourseWork[] $courseWorks
- * @property PassCriteriaItem[] $passCriteriaItems
- * @property Task[] $tasks
+ * @property PassCriteriaItem $passCritItem
+ * @property Task $task
+ * @property TaskGrade[] $taskGrades
  */
-class Assignment extends CActiveRecord
+class Subtask extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
-	 * @return Assignment the static model class
+	 * @return Subtask the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -33,7 +33,7 @@ class Assignment extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'asgmng';
+		return 'subtask';
 	}
 
 	/**
@@ -44,12 +44,12 @@ class Assignment extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('unitid, assign_no, title, status', 'required'),
-			array('unitid, assign_no', 'numerical', 'integerOnly'=>true),
-			array('status', 'length', 'max'=>255),
+			array('task_id, sub_no, title, pass_crit_item_id, max_marks', 'required'),
+			array('task_id, pass_crit_item_id, max_marks', 'numerical', 'integerOnly'=>true),
+			array('sub_no', 'length', 'max'=>10),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('mngid, unitid, assign_no, title, status', 'safe', 'on'=>'search'),
+			array('id, task_id, sub_no, title, pass_crit_item_id, max_marks', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -61,10 +61,9 @@ class Assignment extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'unit' => array(self::BELONGS_TO, 'TblModule', 'unitid'),
-			'courseWorks' => array(self::HAS_MANY, 'CourseWork', 'assign_id'),
-			'passCriteriaItems' => array(self::HAS_MANY, 'PassCriteriaItem', 'assign_id'),
-			'tasks' => array(self::HAS_MANY, 'Task', 'assign_id'),
+			'passCritItem' => array(self::BELONGS_TO, 'PassCriteriaItem', 'pass_crit_item_id'),
+			'task' => array(self::BELONGS_TO, 'Task', 'task_id'),
+			'taskGrades' => array(self::HAS_MANY, 'TaskGrade', 'subtask_id'),
 		);
 	}
 
@@ -74,11 +73,12 @@ class Assignment extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'mngid' => 'Mngid',
-			'unitid' => 'Unitid',
-			'assign_no' => 'Assignment No',
+			'id' => 'ID',
+			'task_id' => 'Task',
+			'sub_no' => 'Subtask No',
 			'title' => 'Title',
-			'status' => 'Status',
+			'pass_crit_item_id' => 'Pass Crit Item',
+			'max_marks' => 'Max Marks',
 		);
 	}
 
@@ -93,11 +93,12 @@ class Assignment extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('mngid',$this->mngid);
-		$criteria->compare('unitid',$this->unitid);
-		$criteria->compare('assign_no',$this->assign_no);
+		$criteria->compare('id',$this->id);
+		$criteria->compare('task_id',$this->task_id);
+		$criteria->compare('sub_no',$this->sub_no,true);
 		$criteria->compare('title',$this->title,true);
-		$criteria->compare('status',$this->status,true);
+		$criteria->compare('pass_crit_item_id',$this->pass_crit_item_id);
+		$criteria->compare('max_marks',$this->max_marks);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

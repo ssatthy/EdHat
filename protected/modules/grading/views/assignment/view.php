@@ -4,54 +4,79 @@
 
 $this->breadcrumbs=array(
 	'Assignments'=>array('index'),
-	$model->id,
+	$model->title,
 );
-if(!Yii::app()->user->checkAccess('0')){
+
 $this->menu=array(
-	array('label'=>'Create Grade', 'url'=>array('grade/create','id'=>$model->id)),
+	
+	array('label'=>'Update Assignment', 'url'=>array('update', 'id'=>$model->mngid)),
+	array('label'=>'Delete Assignment', 'url'=>'#', 'linkOptions'=>array('submit'=>array('delete','id'=>$model->mngid),'confirm'=>'Are you sure you want to delete this item?')),
+	array('label'=>'Add PassCriteria', 'url'=>array('addpasscriteriaitem','id'=>$model->mngid)),
+        array('label'=>'Add Tasks', 'url'=>array('addtask','id'=>$model->mngid)),
+        array('label'=>'Add Subtasks', 'url'=>array('addsubtask','id'=>$model->mngid)),
+    
 );
-}
 ?>
 
-<h1><?php echo $model->assign_name; ?></h1>
+<h1>Assignment Details</h1>
 
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
 	'attributes'=>array(
-		//'id',
+		//'mngid',
+		//'unitid',
 		'assign_no',
-		'assign_name',
-		//'serial_order',
-		// 'source_file_path',
-            
-            array(               // related city displayed as a link
-            'label'=>'File',
-            'type'=>'raw',
-            'value'=>CHtml::link(CHtml::encode('Download'), array('assignment/DownloadFile','id'=>$model->id)),
-        ),
-		'description',
+		'title',
+		'status',
 	),
 )); ?>
-<br>
-<br>
 
-<h1>Evaluations</h1>
+<br>
+<br>
+<h1>Pass Criteria</h1>
 <?php
 
-if(count($gradecolumns)==0)
-    echo 'Not evaluated yet';
-for($i=0;$i<count($gradecolumns);$i++){
+if(count($pass_criteria)==0)
+    echo 'No criteria has been set';
+for($i=0;$i<count($pass_criteria);$i++){
     
-    echo '<b>Evaluated By: '.$gradesby[$i]->verifier_id.'</b>';
+    echo '<b>Criteria No: '.$pass_criteria[$i]->criteria_no.'</b>';
  $this->widget('zii.widgets.grid.CGridView', array(
 	'id'=>'gradecolumn-grid',
-	'dataProvider'=>$gradecolumns[$i],
+	'dataProvider'=>$pass_cri_items[$i],
 	'columns'=>array(
-		//'id',
-		//'grade_id',
-		'field',
-		'marks',
-		'description',
+		
+		'item_no',
+		'title',
+		
+                
+	),
+      'template'=>'{items}',
+));
+
+}
+?>
+
+<br>
+<br>
+<h1>Tasks</h1>
+<?php
+
+if(count($tasks)==0)
+    echo 'No task has been set';
+
+for($i=0;$i<count($tasks);$i++){
+    
+    echo '<b>Task No: '.$tasks[$i]->task_no.'</b>';
+ $this->widget('zii.widgets.grid.CGridView', array(
+	'id'=>'gradecolumn-grid',
+	'dataProvider'=>$subtasks[$i],
+	'columns'=>array(
+		
+		'sub_no',
+		'title',
+                'max_marks'
+		
                 
 	),
       'template'=>'{items}',

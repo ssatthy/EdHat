@@ -84,8 +84,8 @@ class GradeController extends Controller
                                 $columns->marks=$_POST['marks'];
                                 $columns->description=$_POST['description'];
                         
-			if($model->save()){
-                            
+			if( sizeof($columns->field)>0){
+                           $model->save(); 
                                for($i=0;$i < sizeof($columns->field); $i++){
                                    $singlecolumn=new Gradecolumn;
                                    $singlecolumn->grade_id=$model->id;

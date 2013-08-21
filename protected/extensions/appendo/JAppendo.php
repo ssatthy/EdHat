@@ -42,7 +42,7 @@ class JAppendo extends CWidget
 	/**
 	 * @var CModel the data model associated with this widget.
 	 */
-	public $columns;
+	public $items;
 
     /**
      * String value of "add" button (default: 'Add Row')
@@ -149,7 +149,7 @@ class JAppendo extends CWidget
         $this->cs->registerScript(__CLASS__.'#'.$this->id, $js, CClientScript::POS_READY);
         $this->render($this->viewName,array(
             'id'=>$this->id,
-            'columns'=>$this->columns,            
+            'items'=>$this->items,            
         ));
     }
 

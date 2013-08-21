@@ -59,7 +59,7 @@ class ModuleController extends Controller
 	public function actionView($id)
 	{
              $criteria=new CDbCriteria;
-                $criteria->condition='serial_order=:value';
+                $criteria->condition='unitid=:value';
                 $criteria->params=array(':value'=>$id);
                 $assingment = new CActiveDataProvider("Assignment",array('criteria'=>$criteria));
                 

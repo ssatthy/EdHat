@@ -1,27 +1,26 @@
 <?php
 
 /**
- * This is the model class for table "asgmng".
+ * This is the model class for table "learningoc".
  *
- * The followings are the available columns in table 'asgmng':
- * @property integer $mngid
+ * The followings are the available columns in table 'learningoc':
+ * @property integer $lerocid
  * @property integer $unitid
- * @property integer $assign_no
  * @property string $title
+ * @property string $discription
+ * @property integer $qpersentage
  * @property string $status
  *
  * The followings are the available model relations:
  * @property TblModule $unit
- * @property CourseWork[] $courseWorks
- * @property PassCriteriaItem[] $passCriteriaItems
  * @property Task[] $tasks
  */
-class Assignment extends CActiveRecord
+class LearningOC extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
-	 * @return Assignment the static model class
+	 * @return LearningOC the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -33,7 +32,7 @@ class Assignment extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'asgmng';
+		return 'learningoc';
 	}
 
 	/**
@@ -44,12 +43,13 @@ class Assignment extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('unitid, assign_no, title, status', 'required'),
-			array('unitid, assign_no', 'numerical', 'integerOnly'=>true),
+			array('unitid, title, discription, qpersentage, status', 'required'),
+			array('unitid, qpersentage', 'numerical', 'integerOnly'=>true),
+			array('title', 'length', 'max'=>660),
 			array('status', 'length', 'max'=>255),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('mngid, unitid, assign_no, title, status', 'safe', 'on'=>'search'),
+			array('lerocid, unitid, title, discription, qpersentage, status', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -62,9 +62,7 @@ class Assignment extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'unit' => array(self::BELONGS_TO, 'TblModule', 'unitid'),
-			'courseWorks' => array(self::HAS_MANY, 'CourseWork', 'assign_id'),
-			'passCriteriaItems' => array(self::HAS_MANY, 'PassCriteriaItem', 'assign_id'),
-			'tasks' => array(self::HAS_MANY, 'Task', 'assign_id'),
+			'tasks' => array(self::HAS_MANY, 'Task', 'lo_id'),
 		);
 	}
 
@@ -74,10 +72,11 @@ class Assignment extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'mngid' => 'Mngid',
+			'lerocid' => 'Lerocid',
 			'unitid' => 'Unitid',
-			'assign_no' => 'Assignment No',
 			'title' => 'Title',
+			'discription' => 'Discription',
+			'qpersentage' => 'Qpersentage',
 			'status' => 'Status',
 		);
 	}
@@ -93,10 +92,11 @@ class Assignment extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('mngid',$this->mngid);
+		$criteria->compare('lerocid',$this->lerocid);
 		$criteria->compare('unitid',$this->unitid);
-		$criteria->compare('assign_no',$this->assign_no);
 		$criteria->compare('title',$this->title,true);
+		$criteria->compare('discription',$this->discription,true);
+		$criteria->compare('qpersentage',$this->qpersentage);
 		$criteria->compare('status',$this->status,true);
 
 		return new CActiveDataProvider($this, array(

@@ -8,7 +8,11 @@ $this->breadcrumbs=array(
 );
 
 $this->menu=array(
-	array('label'=>'Module list view', 'url'=>array('index')),
+	array('label'=>'Create assignment', 'url'=>array('assignment/create')),
+    array('label'=>' LearningOC', 'url'=>array('learningoc/admin')),
+    array('label'=>' PassCriteria', 'url'=>array('passcriteria/admin')),
+    array('label'=>' MeritCriteria', 'url'=>array('meritcriteria/admin')),
+    array('label'=>' DistinctionCriteria', 'url'=>array('distinctioncriteria/admin')),
 );
 ?>
 
@@ -38,10 +42,10 @@ $this->menu=array(
 	'columns'=>array(
 		//'id',
 		'assign_no',
-		'assign_name',
-		//'serial_order',
+		'title',
+		
 		//'source_file_path',
-		'description',
+		'status',
 		
 	),
      'template'=>'{items}',
