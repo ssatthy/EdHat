@@ -1,24 +1,24 @@
 <?php
 
 /**
- * This is the model class for table "distinction_criteria".
+ * This is the model class for table "dist_criteria_item".
  *
- * The followings are the available columns in table 'distinction_criteria':
+ * The followings are the available columns in table 'dist_criteria_item':
  * @property integer $id
- * @property integer $unit_id
- * @property string $criteria_no
- * @property string $criteria_title
+ * @property integer $distn_id
+ * @property string $item_no
+ * @property string $title
  *
  * The followings are the available model relations:
- * @property DistCriteriaItem[] $distCriteriaItems
- * @property TblModule $unit
+ * @property DcriteriaGrade[] $dcriteriaGrades
+ * @property DistinctionCriteria $distn
  */
-class DistinctionCriteria extends CActiveRecord
+class DistCriteriaItem extends CActiveRecord
 {
 	/**
 	 * Returns the static model of the specified AR class.
 	 * @param string $className active record class name.
-	 * @return DistinctionCriteria the static model class
+	 * @return DistCriteriaItem the static model class
 	 */
 	public static function model($className=__CLASS__)
 	{
@@ -30,7 +30,7 @@ class DistinctionCriteria extends CActiveRecord
 	 */
 	public function tableName()
 	{
-		return 'distinction_criteria';
+		return 'dist_criteria_item';
 	}
 
 	/**
@@ -41,12 +41,12 @@ class DistinctionCriteria extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('unit_id, criteria_no, criteria_title', 'required'),
-			array('unit_id', 'numerical', 'integerOnly'=>true),
-			array('criteria_no', 'length', 'max'=>10),
+			array('distn_id, item_no, title', 'required'),
+			array('distn_id', 'numerical', 'integerOnly'=>true),
+			array('item_no', 'length', 'max'=>10),
 			// The following rule is used by search().
 			// Please remove those attributes that should not be searched.
-			array('id, unit_id, criteria_no, criteria_title', 'safe', 'on'=>'search'),
+			array('id, distn_id, item_no, title', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -58,8 +58,8 @@ class DistinctionCriteria extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'distCriteriaItems' => array(self::HAS_MANY, 'DistCriteriaItem', 'distn_id'),
-			'unit' => array(self::BELONGS_TO, 'TblModule', 'unit_id'),
+			'dcriteriaGrades' => array(self::HAS_MANY, 'DcriteriaGrade', 'criteria_id'),
+			'distn' => array(self::BELONGS_TO, 'DistinctionCriteria', 'distn_id'),
 		);
 	}
 
@@ -70,9 +70,9 @@ class DistinctionCriteria extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'unit_id' => 'Unit',
-			'criteria_no' => 'Criteria No',
-			'criteria_title' => 'Criteria Title',
+			'distn_id' => 'Distn',
+			'item_no' => 'Item No',
+			'title' => 'Title',
 		);
 	}
 
@@ -86,13 +86,11 @@ class DistinctionCriteria extends CActiveRecord
 		// should not be searched.
 
 		$criteria=new CDbCriteria;
-                $criteria->condition='unit_id=:value';
-                $criteria->params=array(':value'=>Yii::app()->session['module_id']);
-                
+
 		$criteria->compare('id',$this->id);
-		$criteria->compare('unit_id',$this->unit_id);
-		$criteria->compare('criteria_no',$this->criteria_no,true);
-		$criteria->compare('criteria_title',$this->criteria_title,true);
+		$criteria->compare('distn_id',$this->distn_id);
+		$criteria->compare('item_no',$this->item_no,true);
+		$criteria->compare('title',$this->title,true);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,

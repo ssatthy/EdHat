@@ -28,16 +28,13 @@ $this->menu=array(
 	'id'=>'assignment-grid',
 	'dataProvider'=>$assignment,
 	'columns'=>array(
-		//'id',
 		'assign_no',
-		'assign_name',
-		//'serial_order',
-		//'source_file_path',
-		'description',
+		'title',
+		'status',
 		
 	),
     'template'=>'{items}',
      'htmlOptions'=>array('style'=>'cursor: pointer;'),
-'selectionChanged'=>"function(id){window.location='" . Yii::app()->urlManager->createUrl('grading/assignment/view', array('id'=>'')) . "' + $.fn.yiiGridView.getSelection(id);}",
+'selectionChanged'=>"function(id){window.location='" . Yii::app()->urlManager->createUrl('/grading/module/AssignView', array('id'=>'')) . "' + $.fn.yiiGridView.getSelection(id);}",
 
 )); ?>

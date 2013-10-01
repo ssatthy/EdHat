@@ -1,6 +1,6 @@
 <?php
 
-class DistinctionCriteriaController extends Controller
+class CourseWorkController extends Controller
 {
 	/**
 	 * @var string the default layout for the views. Defaults to '//layouts/column2', meaning
@@ -32,12 +32,12 @@ class DistinctionCriteriaController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','AddDistinctionCriteriaItem'),
+				'actions'=>array('create','update','DownloadFile'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
 				'actions'=>array('admin','delete'),
-				'users'=>array('@'),
+				'users'=>array('admin'),
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),
@@ -51,15 +51,8 @@ class DistinctionCriteriaController extends Controller
 	 */
 	public function actionView($id)
 	{
-		$criteria=new CDbCriteria;
-                $criteria->condition='distn_id=:value';
-               $criteria->params=array(':value'=>$id);
-                $distn_criteria_item = new CActiveDataProvider("DistCriteriaItem",array('criteria'=>$criteria));
-                
-            
-            $this->render('view',array(
+		$this->render('view',array(
 			'model'=>$this->loadModel($id),
-                        'distn_cri_items'=>$distn_criteria_item,
 		));
 	}
 
@@ -69,64 +62,48 @@ class DistinctionCriteriaController extends Controller
 	 */
 	public function actionCreate()
 	{
-		$model=new DistinctionCriteria;
+		$model=new CourseWork;
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['DistinctionCriteria']))
+		if(isset($_POST['CourseWork']))
 		{
-			$model->attributes=$_POST['DistinctionCriteria'];
-                        $model->unit_id=Yii::app()->session['module_id'];
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
-		}
+                    $model->attributes=$_POST['CourseWork'];
+                    $model->source_file=CUploadedFile::getInstance($model,'source_file');
+                        $model->student_id=Yii::app()->user->id;
+                        $model->assign_id=Yii::app()->session['assign_id'];
+                        $model->source_file_path='/protected/documents/'.Yii::app()->user->id.'/'.$model->assign_id.'_'.$model->source_file->name;
+			if($model->save()){
+                            if (!file_exists(Yii::getPathOfAlias('webroot'). '/protected/documents/'.Yii::app()->user->id)) {
+                                mkdir(Yii::getPathOfAlias('webroot'). '/protected/documents/'.Yii::app()->user->id);
+                                }
+                            $model->source_file->saveAs(Yii::getPathOfAlias('webroot') . '/protected/documents/'.Yii::app()->user->id.'/'.$model->assign_id.'_'.$model->source_file->name);
+				$this->redirect(array('/grading/module/AssignView','id'=>$model->assign_id));
+                }
+                
+                        }
 
 		$this->render('create',array(
 			'model'=>$model,
 		));
 	}
-        
-        public function actionAddDistinctionCriteriaItem()
-        {
-            $distinCriteriaItems = new DistCriteriaItem();
-            
-               if(isset($_POST['item_no'])) {
-                                $distinCriteriaItems->distn_id=$_POST['distn_id'];
-                                $distinCriteriaItems->item_no=$_POST['item_no'];
-                                $distinCriteriaItems->title=$_POST['title'];
-                        if( sizeof($distinCriteriaItems->item_no)>0){
-                            $success=false;
-                               for($i=0;$i < sizeof($distinCriteriaItems->item_no); $i++){
-                                   $success=false;
-                                   $item=new DistCriteriaItem;
-                                   
-                                   $item->distn_id=$distinCriteriaItems->distn_id[$i];
-                                   $item->item_no=$distinCriteriaItems->item_no[$i];
-                                   $item->title=$distinCriteriaItems->title[$i];
-                                   
-                                  if($item->save())
-                                      $success=true;
-                                  
-                                  } 
-                                  if($success)
-                                  $this->redirect(array('distinctioncriteria/admin'));
-                                  else
-                                    throw new CHttpException('Nothing was submitted :(');
-                                }
-                                else
-                                    throw new CHttpException('Nothing was submitted :(');
-                        }
-                      
-           
-            $this->render('add_distn_item',array(
-			
-                        'criteriaitems'=>$distinCriteriaItems,
-		));
-            
-        }
-        
 
+        public function actionDownloadFile($id)
+            {
+              $model=$this->loadModel($id);
+              $assignment=  Assignment::model()->findByPk($model->assign_id);
+              $soursefile = Yii::app()->file->set(Yii::getPathOfAlias('webroot') . $model->source_file_path, true); 
+              if($soursefile->exists &&($model->student_id==Yii::app()->user->id ||
+                      Yii::app()->user->checkAccess('1') ||Yii::app()->user->checkAccess('2')
+                      ||Yii::app()->user->checkAccess('3'))){
+                  $fextention = explode(".", $model->source_file_path);
+                      $soursefile->send($assignment->assign_no.'_'.$assignment->title.'.'.$fextention[1], false); }
+              else {
+                  throw new CHttpException(404,'The requested file does not exist.');
+              }
+            }
+            
 	/**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.
@@ -139,9 +116,9 @@ class DistinctionCriteriaController extends Controller
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
-		if(isset($_POST['DistinctionCriteria']))
+		if(isset($_POST['CourseWork']))
 		{
-			$model->attributes=$_POST['DistinctionCriteria'];
+			$model->attributes=$_POST['CourseWork'];
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -170,7 +147,7 @@ class DistinctionCriteriaController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('DistinctionCriteria');
+		$dataProvider=new CActiveDataProvider('CourseWork');
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
@@ -181,10 +158,10 @@ class DistinctionCriteriaController extends Controller
 	 */
 	public function actionAdmin()
 	{
-		$model=new DistinctionCriteria('search');
+		$model=new CourseWork('search');
 		$model->unsetAttributes();  // clear any default values
-		if(isset($_GET['DistinctionCriteria']))
-			$model->attributes=$_GET['DistinctionCriteria'];
+		if(isset($_GET['CourseWork']))
+			$model->attributes=$_GET['CourseWork'];
 
 		$this->render('admin',array(
 			'model'=>$model,
@@ -195,12 +172,12 @@ class DistinctionCriteriaController extends Controller
 	 * Returns the data model based on the primary key given in the GET variable.
 	 * If the data model is not found, an HTTP exception will be raised.
 	 * @param integer $id the ID of the model to be loaded
-	 * @return DistinctionCriteria the loaded model
+	 * @return CourseWork the loaded model
 	 * @throws CHttpException
 	 */
 	public function loadModel($id)
 	{
-		$model=DistinctionCriteria::model()->findByPk($id);
+		$model=CourseWork::model()->findByPk($id);
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
 		return $model;
@@ -208,11 +185,11 @@ class DistinctionCriteriaController extends Controller
 
 	/**
 	 * Performs the AJAX validation.
-	 * @param DistinctionCriteria $model the model to be validated
+	 * @param CourseWork $model the model to be validated
 	 */
 	protected function performAjaxValidation($model)
 	{
-		if(isset($_POST['ajax']) && $_POST['ajax']==='distinction-criteria-form')
+		if(isset($_POST['ajax']) && $_POST['ajax']==='course-work-form')
 		{
 			echo CActiveForm::validate($model);
 			Yii::app()->end();

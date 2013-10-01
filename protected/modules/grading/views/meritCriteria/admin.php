@@ -10,6 +10,7 @@ $this->breadcrumbs=array(
 $this->menu=array(
 	array('label'=>'List MeritCriteria', 'url'=>array('index')),
 	array('label'=>'Create MeritCriteria', 'url'=>array('create')),
+        array('label'=>'Add Criteria items', 'url'=>array('addmeritcriteriaitem')),
 );
 
 Yii::app()->clientScript->registerScript('search', "

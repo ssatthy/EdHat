@@ -9,10 +9,10 @@ $this->breadcrumbs=array(
 
 $this->menu=array(
 	array('label'=>'Create assignment', 'url'=>array('assignment/create')),
-    array('label'=>' LearningOC', 'url'=>array('learningoc/admin')),
-    array('label'=>' PassCriteria', 'url'=>array('passcriteria/admin')),
-    array('label'=>' MeritCriteria', 'url'=>array('meritcriteria/admin')),
-    array('label'=>' DistinctionCriteria', 'url'=>array('distinctioncriteria/admin')),
+    array('label'=>' LearningOC', 'url'=>array('learningoc/Admin')),
+    array('label'=>' PassCriteria', 'url'=>array('passcriteria/Admin')),
+    array('label'=>' MeritCriteria', 'url'=>array('meritcriteria/Admin')),
+    array('label'=>' DistinctionCriteria', 'url'=>array('distinctioncriteria/Admin')),
 );
 ?>
 

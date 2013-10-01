@@ -32,7 +32,7 @@ class ModuleController extends Controller
 				'roles'=>array('1','2','3'),
 			),
                     array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('student','viewstudent'),
+				'actions'=>array('student','viewstudent','AssignView'),
 				'roles'=>array('0'),
 			),
                     /*
@@ -59,8 +59,13 @@ class ModuleController extends Controller
 	public function actionView($id)
 	{
              $criteria=new CDbCriteria;
-                $criteria->condition='unitid=:value';
+                $criteria->addCondition('unitid=:value');
                 $criteria->params=array(':value'=>$id);
+                if(Yii::app()->user->checkAccess('2'))
+                $criteria->addInCondition('status',array('Pending','NotOpened','Opened'));
+                if(Yii::app()->user->checkAccess('3'))
+                $criteria->addInCondition('status',array('NotOpened','Opened'));
+                
                 $assingment = new CActiveDataProvider("Assignment",array('criteria'=>$criteria));
                 
                 unset(Yii::app()->session['module_id']);
@@ -76,8 +81,9 @@ class ModuleController extends Controller
 	{
             
             $criteria=new CDbCriteria;
-                $criteria->condition='serial_order=:value';
+                $criteria->condition='unitid=:value';
                 $criteria->params=array(':value'=>$id);
+                $criteria->addInCondition('status',array('Opened'));
                 $assingment = new CActiveDataProvider("Assignment",array('criteria'=>$criteria));
                 
                 unset(Yii::app()->session['module_id']);
@@ -88,6 +94,20 @@ class ModuleController extends Controller
                         'assignment'=>$assingment,
 		));
 	}
+        
+        public function actionAssignView($id)
+	{
+            $assignment = Assignment::model()->findByPk($id);
+            $coursework=  CourseWork::model()->findByAttributes(array('assign_id'=>$assignment->mngid));
+               unset(Yii::app()->session['assign_id']);
+                Yii::app()->session['assign_id'] = $id;
+		$this->render('studentassign',array(
+			'model'=>$assignment,
+                        'coursework'=>$coursework,
+                       
+		));
+	}
+        
 	/**
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
@@ -198,11 +218,11 @@ class ModuleController extends Controller
                 $model = new CActiveDataProvider("Module",array('criteria'=>$criteria));
 	
                 
-                $notification=  Notification::model()->findAllByAttributes(array('student_id'=>$student->EdHatNo));
-                Yii::app()->session['notifications']=  sizeof($notification);
+              //  $notification=  Notification::model()->findAllByAttributes(array('student_id'=>$student->EdHatNo));
+              //  Yii::app()->session['notifications']=  sizeof($notification);
                 $this->render('modulestudent',array(
 			'model'=>$model,
-                        'notifications'=> $notification,
+                       // 'notifications'=> $notification,
 		));
 	}
 

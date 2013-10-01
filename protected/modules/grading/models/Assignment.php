@@ -76,7 +76,7 @@ class Assignment extends CActiveRecord
 		return array(
 			'mngid' => 'Mngid',
 			'unitid' => 'Unitid',
-			'assign_no' => 'Assignment No',
+			'assign_no' => 'No',
 			'title' => 'Title',
 			'status' => 'Status',
 		);

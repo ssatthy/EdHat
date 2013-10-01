@@ -37,7 +37,7 @@ class PassCriteriaController extends Controller
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
 				'actions'=>array('admin','delete'),
-				'users'=>array('admin'),
+				'users'=>array('@'),
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),
@@ -70,7 +70,7 @@ class PassCriteriaController extends Controller
 		if(isset($_POST['PassCriteria']))
 		{
 			$model->attributes=$_POST['PassCriteria'];
-                         $model->unitid=Yii::app()->session['module_id'];
+                         $model->unit_id=Yii::app()->session['module_id'];
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}

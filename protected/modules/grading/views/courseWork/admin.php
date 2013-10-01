@@ -1,16 +1,15 @@
 <?php
-/* @var $this DistinctionCriteriaController */
-/* @var $model DistinctionCriteria */
+/* @var $this CourseWorkController */
+/* @var $model CourseWork */
 
 $this->breadcrumbs=array(
-	'Distinction Criterias'=>array('index'),
+	'Course Works'=>array('index'),
 	'Manage',
 );
 
 $this->menu=array(
-	array('label'=>'List DistinctionCriteria', 'url'=>array('index')),
-	array('label'=>'Create DistinctionCriteria', 'url'=>array('create')),
-         array('label'=>'Add Criteria items', 'url'=>array('AddDistinctionCriteriaItem')),
+	array('label'=>'List CourseWork', 'url'=>array('index')),
+	array('label'=>'Create CourseWork', 'url'=>array('create')),
 );
 
 Yii::app()->clientScript->registerScript('search', "
@@ -19,7 +18,7 @@ $('.search-button').click(function(){
 	return false;
 });
 $('.search-form form').submit(function(){
-	$('#distinction-criteria-grid').yiiGridView('update', {
+	$('#course-work-grid').yiiGridView('update', {
 		data: $(this).serialize()
 	});
 	return false;
@@ -27,7 +26,7 @@ $('.search-form form').submit(function(){
 ");
 ?>
 
-<h1>Manage Distinction Criterias</h1>
+<h1>Manage Course Works</h1>
 
 <p>
 You may optionally enter a comparison operator (<b>&lt;</b>, <b>&lt;=</b>, <b>&gt;</b>, <b>&gt;=</b>, <b>&lt;&gt;</b>
@@ -42,14 +41,14 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 </div><!-- search-form -->
 
 <?php $this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>'distinction-criteria-grid',
+	'id'=>'course-work-grid',
 	'dataProvider'=>$model->search(),
 	'filter'=>$model,
 	'columns'=>array(
 		'id',
-		'unit_id',
-		'criteria_no',
-		'criteria_title',
+		'assign_id',
+		'student_id',
+		'source_file_path',
 		array(
 			'class'=>'CButtonColumn',
 		),

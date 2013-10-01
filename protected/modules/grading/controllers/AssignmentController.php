@@ -32,7 +32,7 @@ class AssignmentController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','addpasscriteriaitem','addtask','addsubtask'),
+				'actions'=>array('create','update','addpasscriteriaitem','addtask','addsubtask','SubmitAssignment','GradePassCriteria'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -52,17 +52,56 @@ class AssignmentController extends Controller
 	public function actionView($id)
 	{
             $assignment = $this->loadModel($id);
-            $pass_criteria = PassCriteria::model()->findAllByAttributes(array('unit_id'=>$assignment->unitid));
+            unset(Yii::app()->session['assign_id']);
+                Yii::app()->session['assign_id'] = $id;
+                
+             if($assignment->status=='Opened'){
+                 $criteria=new CDbCriteria;
+                $criteria->addCondition('assign_id=:value');
+               $criteria->params=array(':value'=>$assignment->mngid);
+                $courseworks = new CActiveDataProvider("CourseWork",array('criteria'=>$criteria));
+                $this->render('course_worklist',array(
+			'model'=>$assignment,
+                        'courseworks'=>$courseworks,
+                       
+		));
+             }
+            elseif($assignment->status=='NotFinished'&&Yii::app()->user->checkAccess('1'))
+                $this->assignmentview($assignment);
+                
+            elseif($assignment->status=='Pending' && Yii::app()->user->checkAccess('1'))
+                $this->render('view',array(
+			'model'=>$assignment,
+                       
+		));
             
+                elseif ($assignment->status=='Pending' && Yii::app()->user->checkAccess('2'))
+             $this->assignmentview($assignment);
+           elseif($assignment->status=='NotOpened' && Yii::app()->user->checkAccess('2'))
+                $this->render('view',array(
+			'model'=>$assignment,
+                       
+		));
+           
+           elseif ($assignment->status=='NotOpened' && Yii::app()->user->checkAccess('3'))
+             $this->assignmentview($assignment);
+         
+            
+ }
+
+        public function assignmentview($assignment)
+        {
+            $pass_criteria = PassCriteria::model()->findAllByAttributes(array('unit_id'=>$assignment->unitid));
             $pass_cri_items  =array();
             for($i=0;$i<count($pass_criteria);$i++){
                  $criteria=new CDbCriteria;
-                $criteria->condition='pass_id=:value';
-               $criteria->params=array(':value'=>$pass_criteria[$i]->id);
+                $criteria->addCondition('pass_id=:value');
+                $criteria->addCondition('assign_id=:value1');
+               $criteria->params=array(':value'=>$pass_criteria[$i]->id,':value1'=>$assignment->mngid);
                 $pass_cri_items[$i] = new CActiveDataProvider("PassCriteriaItem",array('criteria'=>$criteria));
                 
             }
-             $tasks = Task::model()->findAllByAttributes(array('assign_id'=>$id));
+             $tasks = Task::model()->findAllByAttributes(array('assign_id'=>$assignment->mngid));
             $subtasks=array();
             for($i=0;$i<count($tasks);$i++){
                  $criteria=new CDbCriteria;
@@ -72,18 +111,56 @@ class AssignmentController extends Controller
                 
             }
             
-            unset(Yii::app()->session['assign_id']);
-                Yii::app()->session['assign_id'] = $id;
-		$this->render('view',array(
+		$this->render('review_view',array(
 			'model'=>$assignment,
                         'pass_criteria'=>$pass_criteria,
                         'pass_cri_items'=>$pass_cri_items,
                         'tasks'=>$tasks,
                         'subtasks'=>$subtasks,
 		));
-	}
+            }
+            
+            public function actionGradePassCriteria($id)
+            {
+                $passgrade = new PcriteriaGrade();
+                 $item = new PcriteriaGrade();
+                if(isset($_POST['PcriteriaGrade']))
+                    {
+                   
+                        $valid=true;
+                        for($i=0;$i<sizeof($_POST['PcriteriaGrade']);$i++)
+                        {
+                            if(isset($_POST['PcriteriaGrade'][$i])){
+                                $item->attributes=$_POST['PcriteriaGrade'][$i];
+                           // $valid=$item->validate() && $valid;
+                            
+                        }
+                       echo 'func'.sizeof($_POST['PcriteriaGrade']); die();
+                    }
+                    }
+                
+                $coursework=  CourseWork::model()->findByPk($id);
+                $assignment = Assignment::model()->findByPk($coursework->assign_id);
+                $passcriteria = PassCriteria::model()->findAllByAttributes(array('unit_id'=>$assignment->unitid));
+                
+                $criteria_items= array();
+                for($x=0;$x<sizeof($passcriteria);$x++){
+                    $criteria=new CDbCriteria;
+                $criteria->addCondition('pass_id=:value');
+                $criteria->addCondition('assign_id=:value1');
+               $criteria->params=array(':value'=>$passcriteria[$x]->id,':value1'=>$assignment->mngid);
+                $criteria_items[$x] = new CActiveDataProvider("PassCriteriaItem",array('criteria'=>$criteria));
+                }
+                $this->render('/grade/grade_criteria',array(
+			'model'=>$assignment,
+                        'criteria'=>$passcriteria,
+                        'criteriaitem'=>$criteria_items,
+                        'grades'=>$passgrade,
+		));
+            }
+            
 
-	/**
+        /**
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
@@ -98,7 +175,7 @@ class AssignmentController extends Controller
 		{
 			$model->attributes=$_POST['Assignment'];
                         $model->unitid=Yii::app()->session['module_id'];
-                        $model->status='Not Finished';
+                        $model->status='NotFinished';
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->mngid));
 		}
@@ -108,7 +185,20 @@ class AssignmentController extends Controller
 		));
 	}
 
-        
+        public function actionSubmitAssignment($id)
+        {
+            $assign=  Assignment::model()->findByPk($id);
+            if(Yii::app()->user->checkAccess('1'))
+            $assign->status='Pending';
+            if(Yii::app()->user->checkAccess('2'))
+            $assign->status='NotOpened';
+            if(Yii::app()->user->checkAccess('3'))
+            $assign->status='Opened';
+            if($assign->save())
+		$this->redirect(array('view','id'=>$assign->mngid));
+        }
+
+
         public function actionAddPassCriteriaItem($id)
         {
             $passCriteriaItems = new PassCriteriaItem();

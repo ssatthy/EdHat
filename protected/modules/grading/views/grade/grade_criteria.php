@@ -27,3 +27,6 @@ $this->breadcrumbs=array(
 
 <br>
 <br>
+<h3>Create Grade</h3>
+<?php echo $this->renderPartial('/grade/grade_criteria_form', array('criteria'=>$criteria,'criteriaitems'=>$criteriaitem,'grades'=>$grades)); ?>
+

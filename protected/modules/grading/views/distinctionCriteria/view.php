@@ -16,7 +16,7 @@ $this->menu=array(
 );
 ?>
 
-<h1>View DistinctionCriteria #<?php echo $model->id; ?></h1>
+<h1>Distinction Criteria Details</h1>
 
 <?php $this->widget('zii.widgets.CDetailView', array(
 	'data'=>$model,
@@ -27,3 +27,24 @@ $this->menu=array(
 		'criteria_title',
 	),
 )); ?>
+
+<br>
+
+<?php
+
+if(count($distn_cri_items)==0)
+    echo 'No criteria has been set';
+ $this->widget('zii.widgets.grid.CGridView', array(
+	'id'=>'gradecolumn-grid',
+	'dataProvider'=>$distn_cri_items,
+	'columns'=>array(
+		
+		'item_no',
+		'title',
+		
+                
+	),
+      'template'=>'{items}',
+));
+
+?>

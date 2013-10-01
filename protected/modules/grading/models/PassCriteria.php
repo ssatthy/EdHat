@@ -86,7 +86,9 @@ class PassCriteria extends CActiveRecord
 		// should not be searched.
 
 		$criteria=new CDbCriteria;
-
+                $criteria->condition='unit_id=:value';
+                $criteria->params=array(':value'=>Yii::app()->session['module_id']);
+                
 		$criteria->compare('id',$this->id);
 		$criteria->compare('unit_id',$this->unit_id);
 		$criteria->compare('criteria_no',$this->criteria_no,true);

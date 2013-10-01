@@ -92,6 +92,9 @@ class LearningOC extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
+                $criteria->condition='unitid=:value';
+                $criteria->params=array(':value'=>Yii::app()->session['module_id']);
+                
 		$criteria->compare('lerocid',$this->lerocid);
 		$criteria->compare('unitid',$this->unitid);
 		$criteria->compare('title',$this->title,true);

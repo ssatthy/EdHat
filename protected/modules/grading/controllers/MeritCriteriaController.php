@@ -32,12 +32,12 @@ class MeritCriteriaController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update'),
+				'actions'=>array('create','update','AddMeritCriteriaItem'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
 				'actions'=>array('admin','delete'),
-				'users'=>array('admin'),
+				'users'=>array('@'),
 			),
 			array('deny',  // deny all users
 				'users'=>array('*'),
@@ -51,8 +51,15 @@ class MeritCriteriaController extends Controller
 	 */
 	public function actionView($id)
 	{
-		$this->render('view',array(
+                 $criteria=new CDbCriteria;
+                $criteria->condition='meritc_id=:value';
+               $criteria->params=array(':value'=>$id);
+                $merit_criteria_item = new CActiveDataProvider("MeritCriteriaItem",array('criteria'=>$criteria));
+                
+            
+            $this->render('view',array(
 			'model'=>$this->loadModel($id),
+                        'merit_cri_items'=>$merit_criteria_item,
 		));
 	}
 
@@ -70,7 +77,7 @@ class MeritCriteriaController extends Controller
 		if(isset($_POST['MeritCriteria']))
 		{
 			$model->attributes=$_POST['MeritCriteria'];
-                         $model->unitid=Yii::app()->session['module_id'];
+                         $model->unit_id=Yii::app()->session['module_id'];
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -80,6 +87,46 @@ class MeritCriteriaController extends Controller
 		));
 	}
 
+        
+        public function actionAddMeritCriteriaItem()
+        {
+            $meritCriteriaItems = new MeritCriteriaItem();
+            
+               if(isset($_POST['item_no'])) {
+                                $meritCriteriaItems-> meritc_id=$_POST['meritc_id'];
+                                $meritCriteriaItems->item_no=$_POST['item_no'];
+                                $meritCriteriaItems->title=$_POST['title'];
+                        if( sizeof($meritCriteriaItems->item_no)>0){
+                            $success=false;
+                               for($i=0;$i < sizeof($meritCriteriaItems->item_no); $i++){
+                                   $success=false;
+                                   $item=new MeritCriteriaItem;
+                                   
+                                   $item->meritc_id=$meritCriteriaItems->meritc_id[$i];
+                                   $item->item_no=$meritCriteriaItems->item_no[$i];
+                                   $item->title=$meritCriteriaItems->title[$i];
+                                   
+                                  if($item->save())
+                                      $success=true;
+                                  
+                                  } 
+                                  if($success)
+                                  $this->redirect(array('meritcriteria/admin'));
+                                  else
+                                    throw new CHttpException('Nothing was submitted :(');
+                                }
+                                else
+                                    throw new CHttpException('Nothing was submitted :(');
+                        }
+                      
+           
+            $this->render('add_merit_item',array(
+			
+                        'criteriaitems'=>$meritCriteriaItems,
+		));
+            
+        }
+        
 	/**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.
