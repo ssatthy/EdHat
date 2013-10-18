@@ -32,7 +32,7 @@ class CourseWorkController extends Controller
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
-				'actions'=>array('create','update','DownloadFile'),
+				'actions'=>array('create','update','DownloadFile','ApproveCourseWork'),
 				'users'=>array('@'),
 			),
 			array('allow', // allow admin user to perform 'admin' and 'delete' actions
@@ -104,7 +104,86 @@ class CourseWorkController extends Controller
               }
             }
             
-	/**
+            
+            public function actionApproveCourseWork($id){
+                $status=  CourseworkStatus::model()->findByAttributes(array('cwork_id'=>$id));
+                if(Yii::app()->user->role==1){
+                    if($status->prof_pass=='failed'
+                            ||($status->prof_pass=='passed' && $status->prof_merit=='failed')
+                            ||($status->prof_pass=='passed' && $status->prof_merit=='passed' && $status->prof_merit=='failed' )
+                            ||($status->prof_pass=='passed' && $status->prof_merit=='passed' && $status->prof_merit=='passed' )){
+                        if($status->prof_task=='OK'){
+                            $status->isNewRecord=false;
+                            $status->prof_approved='OK';
+                            $status->save();
+                            Yii::app()->user->setFlash('success','This course work has been approved!');
+                            $this->redirect(array('Assignment/CourseWorkView','id'=>$id));
+                        }
+                        else{
+                           Yii::app()->user->setFlash('error','OOPS! </br> Marks have not been given correctly for tasks </br> Please edit the marks!' );
+                            $this->redirect(array('Assignment/CourseWorkView','id'=>$id)); 
+                        }
+                            
+                       }
+                    else
+                    {
+                      Yii::app()->user->setFlash('error','OOPS! </br> Criterias have not been marked correctly </br> Please make it correct, then try!' );
+                            $this->redirect(array('Assignment/CourseWorkView','id'=>$id));   
+                    }
+                }
+                
+                 elseif(Yii::app()->user->role==2){
+                    if($status->int_pass=='failed'
+                            ||($status->int_pass=='passed' && $status->int_merit=='failed')
+                            ||($status->int_pass=='passed' && $status->int_merit=='passed' && $status->int_merit=='failed' )
+                            ||($status->int_pass=='passed' && $status->int_merit=='passed' && $status->int_merit=='passed' )){
+                        if($status->int_task=='OK'){
+                            $status->isNewRecord=false;
+                            $status->int_approved='OK';
+                            $status->save();
+                            Yii::app()->user->setFlash('success','This course work has been approved!');
+                            $this->redirect(array('Assignment/CourseWorkView','id'=>$id));
+                        }
+                        else{
+                           Yii::app()->user->setFlash('error','OOPS! </br> Marks have not been given correctly for tasks </br> Please edit the marks!' );
+                            $this->redirect(array('Assignment/CourseWorkView','id'=>$id)); 
+                        }
+                            
+                       }
+                    else
+                    {
+                      Yii::app()->user->setFlash('error','OOPS! </br> Criterias have not been marked correctly </br> Please make it correct, then try!' );
+                            $this->redirect(array('Assignment/CourseWorkView','id'=>$id));   
+                    }
+                }
+                 elseif(Yii::app()->user->role==3){
+                    if($status->ext_pass=='failed'
+                            ||($status->ext_pass=='passed' && $status->ext_merit=='failed')
+                            ||($status->ext_pass=='passed' && $status->ext_merit=='passed' && $status->ext_merit=='failed' )
+                            ||($status->ext_pass=='passed' && $status->ext_merit=='passed' && $status->ext_merit=='passed' )){
+                        if($status->ext_task=='OK'){
+                            $status->isNewRecord=false;
+                            $status->ext_approved='OK';
+                            $status->save();
+                            Yii::app()->user->setFlash('success','This course work has been approved!');
+                            $this->redirect(array('Assignment/CourseWorkView','id'=>$id));
+                        }
+                        else{
+                           Yii::app()->user->setFlash('error','OOPS! </br> Marks have not been given correctly for tasks </br> Please edit the marks!' );
+                            $this->redirect(array('Assignment/CourseWorkView','id'=>$id)); 
+                        }
+                            
+                       }
+                    else
+                    {
+                      Yii::app()->user->setFlash('error','OOPS! </br> Criterias have not been marked correctly </br> Please make it correct, then try!' );
+                            $this->redirect(array('Assignment/CourseWorkView','id'=>$id));   
+                    }
+                }
+               
+            }
+
+            /**
 	 * Updates a particular model.
 	 * If update is successful, the browser will be redirected to the 'view' page.
 	 * @param integer $id the ID of the model to be updated

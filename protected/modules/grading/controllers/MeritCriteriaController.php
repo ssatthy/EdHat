@@ -91,7 +91,7 @@ class MeritCriteriaController extends Controller
         public function actionAddMeritCriteriaItem()
         {
             $meritCriteriaItems = new MeritCriteriaItem();
-            
+         
                if(isset($_POST['item_no'])) {
                                 $meritCriteriaItems-> meritc_id=$_POST['meritc_id'];
                                 $meritCriteriaItems->item_no=$_POST['item_no'];
@@ -99,7 +99,7 @@ class MeritCriteriaController extends Controller
                         if( sizeof($meritCriteriaItems->item_no)>0){
                             $success=false;
                                for($i=0;$i < sizeof($meritCriteriaItems->item_no); $i++){
-                                   $success=false;
+                                  
                                    $item=new MeritCriteriaItem;
                                    
                                    $item->meritc_id=$meritCriteriaItems->meritc_id[$i];
@@ -110,8 +110,9 @@ class MeritCriteriaController extends Controller
                                       $success=true;
                                   
                                   } 
-                                  if($success)
-                                  $this->redirect(array('meritcriteria/admin'));
+                                  if($success){
+                                      
+                                  $this->redirect(array('meritcriteria/admin'));}
                                   else
                                     throw new CHttpException('Nothing was submitted :(');
                                 }

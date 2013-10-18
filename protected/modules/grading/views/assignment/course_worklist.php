@@ -1,14 +1,9 @@
 <?php
-/* @var $this AssignmentController */
-/* @var $model Assignment */
 
-$this->breadcrumbs=array(
-	'Assignments'=>array('index'),
-	$model->title,
+$this->menu=array(
+	array('label'=>'Approve All', 'url'=>array('','')),
+
 );
-
-
-
 ?>
 
 <h1>Assignment Details</h1>
@@ -36,5 +31,5 @@ $this->breadcrumbs=array(
 	),
      'template'=>'{items}',
     'htmlOptions'=>array('style'=>'cursor: pointer;'),
-'selectionChanged'=>"function(id){window.location='" . Yii::app()->urlManager->createUrl('grading/assignment/GradePassCriteria', array('id'=>'')) . "' + $.fn.yiiGridView.getSelection(id);}",
+'selectionChanged'=>"function(id){window.location='" . Yii::app()->urlManager->createUrl('grading/assignment/CourseWorkView', array('id'=>'')) . "' + $.fn.yiiGridView.getSelection(id);}",
 )); ?>

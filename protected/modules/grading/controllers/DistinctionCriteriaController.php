@@ -98,7 +98,7 @@ class DistinctionCriteriaController extends Controller
                         if( sizeof($distinCriteriaItems->item_no)>0){
                             $success=false;
                                for($i=0;$i < sizeof($distinCriteriaItems->item_no); $i++){
-                                   $success=false;
+                                  
                                    $item=new DistCriteriaItem;
                                    
                                    $item->distn_id=$distinCriteriaItems->distn_id[$i];

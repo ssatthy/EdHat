@@ -46,13 +46,18 @@ for($i=0;$i<count($pass_criteria);$i++){
     
     echo '<b>Criteria No: '.$pass_criteria[$i]->criteria_no.'</b>';
  $this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>'gradecolumn-grid',
+	'id'=>'passitemcolumn-grid',
 	'dataProvider'=>$pass_cri_items[$i],
 	'columns'=>array(
 		
 		'item_no',
 		'title',
-		
+		array(
+			'class' => 'CButtonColumn',
+                    'template'=>'{delete}',
+            'deleteButtonUrl' => 'Yii::app()->createUrl("grading/Assignment/DeleteCriteriaItem", array("id"=>$data->id))',
+        
+		),
                 
 	),
       'template'=>'{items}',
@@ -73,14 +78,19 @@ for($i=0;$i<count($tasks);$i++){
     
     echo '<b>Task No: '.$tasks[$i]->task_no.'</b>';
  $this->widget('zii.widgets.grid.CGridView', array(
-	'id'=>'gradecolumn-grid',
+	'id'=>'taskitemcolumn-grid',
 	'dataProvider'=>$subtasks[$i],
 	'columns'=>array(
 		
 		'sub_no',
 		'title',
-                'max_marks'
-		
+                'max_marks',
+		array(
+			'class' => 'CButtonColumn',
+                    'template'=>'{delete}',
+            'deleteButtonUrl' => 'Yii::app()->createUrl("grading/Assignment/DeleteTaskItem", array("id"=>$data->id))',
+        
+		),
                 
 	),
       'template'=>'{items}',
